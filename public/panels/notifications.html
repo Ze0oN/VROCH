@@ -1,0 +1,27 @@
+<div class="panel-container">
+  <h2>Notifications Panel</h2>
+
+  <label for="notificationId">Notification ID</label>
+  <input type="number" id="notificationId" placeholder="Enter notification ID">
+
+  <label for="user_id">User ID</label>
+  <input type="number" id="user_id" placeholder="Enter user ID">
+
+  <label for="title">Title</label>
+  <input type="text" id="title" placeholder="Enter notification title">
+
+  <label for="body">Body</label>
+  <textarea id="body" placeholder="Enter notification body"></textarea>
+
+  <label for="is_read">Is Read</label>
+  <select id="is_read">
+    <option value="false" selected>Unread</option>
+    <option value="true">Read</option>
+  </select>
+
+  <button onclick="getAllNotifications()">Get All Notifications</button>
+  <button onclick="getNotificationById()">Get Notification by ID</button>
+  <button onclick="createNotification()">Create Notification</button>
+  <button onclick="updateNotification()">Update Notification</button>
+  <button onclick="deleteNotification()">Delete Notification</button>
+</div>

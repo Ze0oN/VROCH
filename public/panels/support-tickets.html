@@ -1,0 +1,24 @@
+<div class="panel-container">
+  <h2>Support Tickets Panel</h2>
+
+  <label for="support_ticketsId">Ticket ID</label>
+  <input type="number" id="support_ticketsId" placeholder="Enter ticket ID">
+
+  <label for="user_id">User ID</label>
+  <input type="number" id="user_id" placeholder="Enter user ID">
+
+  <label for="subject">Subject</label>
+  <input type="text" id="subject" placeholder="Enter ticket subject">
+
+  <label for="description">Description</label>
+  <textarea id="description" placeholder="Enter issue description"></textarea>
+
+  <label for="status">Status</label>
+  <input type="text" id="status" placeholder="e.g., open, resolved">
+
+  <button onclick="getAllSupport_tickets()">Get All Support Tickets</button>
+  <button onclick="getSupport_ticketsById()">Get Support Ticket by ID</button>
+  <button onclick="createSupport_tickets()">Create Support Ticket</button>
+  <button onclick="updateSupport_tickets()">Update Support Ticket</button>
+  <button onclick="deleteSupport_tickets()">Delete Support Ticket</button>
+</div>

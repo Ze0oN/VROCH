@@ -1,0 +1,27 @@
+<div class="panel-container">
+  <h2>Bills Panel</h2>
+
+  <label for="billId">Bill ID</label>
+  <input type="number" id="billId" placeholder="Enter bill ID">
+
+  <label for="patient_id">Patient ID</label>
+  <input type="number" id="patient_id" placeholder="Enter patient ID">
+
+  <label for="amount">Amount</label>
+  <input type="number" id="amount" step="0.01" placeholder="Enter bill amount">
+
+  <label for="status">Status</label>
+  <input type="text" id="status" placeholder="e.g., paid, pending">
+
+  <label for="billing_date">Billing Date</label>
+  <input type="date" id="billing_date">
+
+  <label for="details">Details</label>
+  <textarea id="details" placeholder="Enter billing details"></textarea>
+
+  <button onclick="getAllBills()">Get All Bills</button>
+  <button onclick="getBillById()">Get Bill by ID</button>
+  <button onclick="createBill()">Create Bill</button>
+  <button onclick="updateBill()">Update Bill</button>
+  <button onclick="deleteBill()">Delete Bill</button>
+</div>

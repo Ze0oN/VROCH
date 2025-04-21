@@ -1,0 +1,33 @@
+<div class="panel-container">
+  <h2>Patients Panel</h2>
+
+  <label for="patientId">Patient ID</label>
+  <input type="number" id="patientId" placeholder="Enter patient ID">
+
+  <label for="user_id">User ID</label>
+  <input type="number" id="user_id" placeholder="Enter user ID">
+
+  <label for="blood_group">Blood Group</label>
+  <input type="text" id="blood_group" placeholder="e.g., A+, B-, O+">
+
+  <label for="emergency_contact_name">Emergency Contact Name</label>
+  <input type="text" id="emergency_contact_name" placeholder="Enter emergency contact name">
+
+  <label for="emergency_contact_phone">Emergency Contact Phone</label>
+  <input type="text" id="emergency_contact_phone" placeholder="Enter emergency contact number">
+
+  <label for="address">Address</label>
+  <input type="text" id="address" placeholder="Enter patient address">
+
+  <label for="allergies">Allergies</label>
+  <input type="text" id="allergies" placeholder="Enter known allergies">
+
+  <label for="chronic_conditions">Chronic Conditions</label>
+  <input type="text" id="chronic_conditions" placeholder="Enter chronic conditions">
+  
+  <button onclick="getAllPatients()">Get All Patients</button>
+  <button onclick="getPatientById()">Get Patient by ID</button>
+  <button onclick="createPatient()">Create Patient</button>
+  <button onclick="updatePatient()">Update Patient</button>
+  <button onclick="deletePatient()">Delete Patient</button>
+</div>

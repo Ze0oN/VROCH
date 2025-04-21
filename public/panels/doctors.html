@@ -1,0 +1,30 @@
+<div class="panel-container">
+  <h2>Doctors Panel</h2>
+
+  <label for="doctorId">Doctor ID</label>
+  <input type="number" id="doctorId" placeholder="Enter doctor ID">
+
+  <label for="user_id">User ID</label>
+  <input type="number" id="user_id" placeholder="Enter user ID">
+
+  <label for="specialization">Specialization</label>
+  <input type="text" id="specialization" placeholder="e.g., Cardiologist, Dentist">
+
+  <label for="qualifications">Qualifications</label>
+  <input type="text" id="qualifications" placeholder="e.g., MBBS, MD">
+
+  <label for="availability_status">Availability Status</label>
+  <input type="text" id="availability_status" placeholder="e.g., available, on leave">
+
+  <label for="profile_picture_url">Profile Picture URL</label>
+  <input type="text" id="profile_picture_url" placeholder="Enter image URL">
+
+  <label for="bio">Bio</label>
+  <textarea id="bio" placeholder="Enter short bio or description"></textarea>
+
+  <button onclick="getAllDoctors()">Get All Doctors</button>
+  <button onclick="getDoctorById()">Get Doctor by ID</button>
+  <button onclick="createDoctor()">Create Doctor</button>
+  <button onclick="updateDoctor()">Update Doctor</button>
+  <button onclick="deleteDoctor()">Delete Doctor</button>
+</div>

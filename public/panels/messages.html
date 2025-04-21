@@ -1,0 +1,27 @@
+<div class="panel-container">
+  <h2>Messages Panel</h2>
+
+  <label for="messageId">Message ID</label>
+  <input type="number" id="messageId" placeholder="Enter message ID">
+
+  <label for="sender_id">Sender ID</label>
+  <input type="number" id="sender_id" placeholder="Enter sender ID">
+
+  <label for="receiver_id">Receiver ID</label>
+  <input type="number" id="receiver_id" placeholder="Enter receiver ID">
+
+  <label for="message">Message</label>
+  <textarea id="message" placeholder="Enter message content"></textarea>
+
+  <label for="is_read">Is Read</label>
+  <select id="is_read">
+    <option value="false" selected>Unread</option>
+    <option value="true">Read</option>
+  </select>
+
+  <button onclick="getAllMessages()">Get All Messages</button>
+  <button onclick="getMessageById()">Get Message by ID</button>
+  <button onclick="createMessage()">Create Message</button>
+  <button onclick="updateMessage()">Update Message</button>
+  <button onclick="deleteMessage()">Delete Message</button>
+</div>

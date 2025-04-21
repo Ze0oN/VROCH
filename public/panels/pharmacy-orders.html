@@ -1,0 +1,27 @@
+<div class="panel-container">
+  <h2>Pharmacy Orders Panel</h2>
+
+  <label for="pharmacy_ordersId">Order ID</label>
+  <input type="number" id="pharmacy_ordersId" placeholder="Enter order ID">
+
+  <label for="patient_id">Patient ID</label>
+  <input type="number" id="patient_id" placeholder="Enter patient ID">
+
+  <label for="medications">Medications</label>
+  <input type="text" id="medications" placeholder="e.g., Ibuprofen, Paracetamol">
+
+  <label for="total_amount">Total Amount</label>
+  <input type="number" id="total_amount" placeholder="Enter total amount" step="0.01">
+
+  <label for="status">Status</label>
+  <input type="text" id="status" placeholder="e.g., pending, delivered">
+
+  <label for="order_date">Order Date</label>
+  <input type="date" id="order_date">
+
+  <button onclick="getAllPharmacy_orders()">Get All Pharmacy Orders</button>
+  <button onclick="getPharmacy_ordersById()">Get Pharmacy Order by ID</button>
+  <button onclick="createPharmacy_orders()">Create Pharmacy Order</button>
+  <button onclick="updatePharmacy_orders()">Update Pharmacy Order</button>
+  <button onclick="deletePharmacy_orders()">Delete Pharmacy Order</button>
+</div>

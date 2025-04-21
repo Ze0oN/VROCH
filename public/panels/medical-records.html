@@ -1,0 +1,27 @@
+<div class="panel-container">
+  <h2>Medical Records Panel</h2>
+
+  <label for="medicalRecordsId">Record ID</label>
+  <input type="number" id="medicalRecordsId" placeholder="Enter record ID">
+
+  <label for="patient_id">Patient ID</label>
+  <input type="number" id="patient_id" placeholder="Enter patient ID">
+
+  <label for="doctor_id">Doctor ID</label>
+  <input type="number" id="doctor_id" placeholder="Enter doctor ID">
+
+  <label for="record_type">Record Type</label>
+  <input type="text" id="record_type" placeholder="e.g., diagnosis, lab result">
+
+  <label for="description">Description</label>
+  <textarea id="description" placeholder="Enter record description"></textarea>
+
+  <label for="file_url">File URL</label>
+  <input type="text" id="file_url" placeholder="Enter file download link or path">
+
+  <button onclick="getAllMedicalRecords()">Get All Records</button>
+  <button onclick="getMedicalRecordById()">Get Record by ID</button>
+  <button onclick="createMedicalRecord()">Create Record</button>
+  <button onclick="updateMedicalRecord()">Update Record</button>
+  <button onclick="deleteMedicalRecord()">Delete Record</button>
+</div>
