@@ -81,6 +81,12 @@
     <input type="email" id="email" placeholder="Enter your email" required />
     <input type="password" id="password" placeholder="Enter your password" required />
     <button id="loginBtn" class="primary-button">Login</button>
+    <a href="/api/auth/google" style="text-decoration: none;">
+      <button class="secondary-button" style="background-color: #db4437;">Login with Google</button>
+    </a>
+    <a href="/api/auth/facebook" style="text-decoration: none;">
+      <button class="secondary-button" style="background-color: #3b5998;">Login with Facebook</button>
+    </a>
     <button onclick="register()" class="secondary-button">Register Page</button>
     <div id="errorMessage" class="error-message"></div>
   </div>
@@ -121,8 +127,10 @@
         // Redirect based on user role
         if (data.user.role === 'admin') {
           window.location.href = 'admin-dashboard.html';
-        } else {
-          window.location.href = 'under-development.html';
+        } else if (data.user.role === 'patient') {
+          window.location.href = 'patient-dashboard.html';
+        } else if (data.user.role === 'doctor') {
+          window.location.href = 'doctor-dashboard.html';
         }
       } catch (error) {
         errorBox.textContent = 'Server connection failed. Please try again.';

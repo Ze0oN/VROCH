@@ -1,7 +1,11 @@
 const express = require('express');
 const path = require('path');
 const app = express();
+const passport = require('passport');
 require('dotenv').config();
+require('./controllers/authentication/googleStrategy');
+require('./controllers/authentication/facebookStrategy');
+app.use(passport.initialize());
 
 const PORT = process.env.PORT || 5000;
 

@@ -125,3 +125,66 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// UPDATE own user (all can access)
+exports.updateOwnProfile = async (req, res) => {
+  try {
+    console.log('[DEBUG] Authenticated user ID:', req.user.id);
+    console.log('[DEBUG] Request body:', req.body);
+
+    const userId = req.user.id;
+    const { password, phone, gender, date_of_birth } = req.body;
+
+    const updates = [];
+    const values = [];
+    let i = 1;
+
+    let plainPassword = null;
+
+    if (password) {
+      plainPassword = password;
+      const hashed = await bcrypt.hash(password, 10);
+      updates.push(`password_hash = $${i++}`);
+      values.push(hashed);
+    }
+
+    if (phone) {
+      updates.push(`phone = $${i++}`);
+      values.push(phone);
+    }
+
+    if (gender) {
+      updates.push(`gender = $${i++}`);
+      values.push(gender);
+    }
+
+    if (date_of_birth) {
+      updates.push(`date_of_birth = $${i++}`);
+      values.push(date_of_birth);
+    }
+
+    if (updates.length === 0) return res.status(400).json({ error: 'No data to update.' });
+
+    const query = `
+      UPDATE users SET ${updates.join(', ')}, updated_at = NOW()
+      WHERE id = $${i} RETURNING id, email, full_name, phone, gender, date_of_birth, role`;
+    values.push(userId);
+
+    const result = await pool.query(query, values);
+
+    // Update plain password in user_passwords table too
+    if (plainPassword) {
+      const email = result.rows[0].email;
+      await pool.query(
+        `UPDATE user_passwords SET password = $1 WHERE email = $2`,
+        [plainPassword, email]
+      );
+    }
+
+    res.json({ message: 'Profile updated', user: result.rows[0] });
+
+  } catch (err) {
+    console.error('[ERROR] Update profile failed:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+};

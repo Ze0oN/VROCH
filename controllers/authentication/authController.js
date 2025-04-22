@@ -44,44 +44,45 @@ exports.registerUser = async (req, res) => {
 
 // POST /api/auth/login
 exports.loginUser = async (req, res) => {
-    const { email, password } = req.body;
-  
-    try {
-      // 1. Find user by email
-      const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-      const user = result.rows[0];
-  
-      if (!user) {
-        return res.status(401).json({ error: 'Invalid email or password' });
-      }
-  
-      // 2. Compare password
-      const isMatch = await bcrypt.compare(password, user.password_hash);
-      if (!isMatch) {
-        return res.status(401).json({ error: 'Invalid email or password' });
-      }
-  
-      // 3. Generate JWT
-      const token = jwt.sign(
-        { id: user.id, role: user.role, email: user.email },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRES_IN }
-      );      
-  
-      console.log('TOKEN SENT:', token);
+  const { email, password } = req.body;
 
-      // 4. Return user data + token
-      res.json({
-        message: 'Login successful',
-        token,
-        user: {
-          id: user.id,
-          full_name: user.full_name,
-          email: user.email,
-          role: user.role
-        }
-      });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+  try {
+    // 1. Look up user by email
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = result.rows[0];
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
-  };
+
+    // 2. Compare password with hashed password
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // 3. Generate JWT
+    const token = jwt.sign(
+      { id: user.id, role: user.role, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
+
+    // 4. Return token and user info
+    res.json({
+      message: 'Login successful',
+      token,
+      user: {
+        id: user.id,
+        full_name: user.full_name,
+        email: user.email,
+        role: user.role
+      }
+    });
+
+  } catch (err) {
+    console.error('[LOGIN ERROR]', err.message);
+    res.status(500).json({ error: 'Login failed' });
+  }
+};

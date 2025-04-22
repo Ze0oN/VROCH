@@ -3,15 +3,24 @@ require('dotenv').config();
 
 module.exports = function (req, res, next) {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; 
+  console.log('[DEBUG] Authorization Header:', authHeader);
 
-  if (!token) return res.status(401).json({ error: 'Access Denied. No token provided.' });
+  const token = authHeader && authHeader.split(' ')[1];
+  console.log('[DEBUG] Extracted Token:', token);
 
-  try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified; // Attach user data to request
-    next();
-  } catch (err) {
-    res.status(403).json({ error: 'Invalid token.' });
+  if (!token) {
+    console.log('[ERROR] No token provided');
+    return res.status(403).json({ error: 'No token provided' });
   }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      console.log('[ERROR] Token verification failed:', err.message);
+      return res.status(403).json({ error: 'Invalid token' });
+    }
+
+    console.log('[DEBUG] Token verified successfully. User:', user);
+    req.user = user;
+    next();
+  });
 };

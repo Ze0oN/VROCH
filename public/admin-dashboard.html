@@ -63,6 +63,7 @@
 
     <button onclick="goToPage('admin/database-test.html')">Database Control</button>
     <button onclick="goToPage('admin/passwords.html')">All Passwords (Only During Development)</button>
+    <button onclick="goToPage('update-profile.html')">Update Profile</button>
 
     <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
@@ -70,6 +71,28 @@
   <script>
     function goToPage(path) {
       window.location.href = path;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    if (token) {
+      // Save token to localStorage
+      localStorage.setItem('token', token);
+
+      try {
+        // Decode payload from token (base64 decode the second part of JWT)
+        const payload = JSON.parse(atob(token.split('.')[1]));
+
+        // Save user role and ID
+        if (payload.role) localStorage.setItem('userRole', payload.role);
+        if (payload.id) localStorage.setItem('userId', payload.id);
+      } catch (err) {
+        console.error('Failed to decode token:', err.message);
+      }
+
+      // Clean the URL by removing ?token=...
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
 
     function logout() {
