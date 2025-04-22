@@ -145,3 +145,9 @@ CREATE TABLE health_programs (
     end_date DATE,
     eligibility TEXT
 );
+
+-- Passwords table (Development)
+CREATE TABLE user_passwords (
+  email VARCHAR(100) PRIMARY KEY,
+  password TEXT
+);

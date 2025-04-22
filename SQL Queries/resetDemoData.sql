@@ -1,5 +1,5 @@
 -- DROP ALL TABLES IF THEY EXIST
-DROP TABLE IF EXISTS health_programs, services, support_tickets, pharmacy_orders, notifications, messages, subscriptions, bills, medical_records, prescriptions, appointments, patients, doctors, users CASCADE;
+DROP TABLE IF EXISTS user_passwords, health_programs, services, support_tickets, pharmacy_orders, notifications, messages, subscriptions, bills, medical_records, prescriptions, appointments, patients, doctors, users CASCADE;
 
 -- USERS TABLE
 CREATE TABLE users (
@@ -16,11 +16,11 @@ CREATE TABLE users (
 );
 
 INSERT INTO users (full_name, email, password_hash, role, phone, gender, date_of_birth) VALUES
-('Admin User', 'admin@vroch.com', 'hashed_pw1', 'admin', '1111111111', 'other', '1980-01-01'),
-('Dr. Strange', 'strange@vroch.com', 'hashed_pw2', 'doctor', '2222222222', 'male', '1975-05-10'),
-('Jane Patient', 'jane@vroch.com', 'hashed_pw3', 'patient', '3333333333', 'female', '1990-09-20'),
-('Dr. Meredith Grey', 'meredith@vroch.com', 'hashed_pw4', 'doctor', '5555555555', 'female', '1983-02-14'),
-('Mark Spencer', 'mark@vroch.com', 'hashed_pw5', 'patient', '6666666666', 'male', '1988-07-30');
+('Admin User', 'admin@vroch.com', '$2b$10$Nm6Kfq7exRO4pdpznoK6lOYakzHUg6qWJXaAhv9xmgD77Do//4ksO', 'admin', '1111111111', 'other', '1980-01-01'),
+('Dr. Strange', 'strange@vroch.com', '$2b$10$j8aygi5zKmczoRel7aMf7.d65DTI1KdVinoWnpMr4RiwRdWcURoPm', 'doctor', '2222222222', 'male', '1975-05-10'),
+('Jane Patient', 'jane@vroch.com', '$2b$10$wX7.A1/wNDjPFtN490wLVuM5OHYZsFMmWH9n6EasJTmF1/ETm5lDS', 'patient', '3333333333', 'female', '1990-09-20'),
+('Dr. Meredith Grey', 'meredith@vroch.com', '$2b$10$qoLbs5n1ATk1iIKlhy.8m.b/xiw93/zU/E8pKJp3oSy94IxkwsDdC', 'doctor', '5555555555', 'female', '1983-02-14'),
+('Mark Spencer', 'mark@vroch.com', '$2b$10$qoLbs5n1ATk1iIKlhy.8m.b/xiw93/zU/E8pKJp3oSy94IxkwsDdC', 'patient', '6666666666', 'male', '1988-07-30');
 
 -- DOCTORS TABLE
 CREATE TABLE doctors (
@@ -207,3 +207,16 @@ CREATE TABLE health_programs (
 INSERT INTO health_programs (name, description, start_date, end_date, eligibility) VALUES
 ('Heart Health Week', 'Free heart check-ups and awareness program.', '2025-06-01', '2025-06-07', 'All patients'),
 ('Diabetes Awareness Month', 'Workshops and free screening for diabetes', '2025-11-01', '2025-11-30', 'Adults 40+');
+
+-- PASSWORDS TABLE (Development)
+CREATE TABLE user_passwords (
+  email VARCHAR(100) PRIMARY KEY,
+  password TEXT
+);
+
+INSERT INTO user_passwords (email, password) VALUES
+('admin@vroch.com', 'admin123'),
+('strange@vroch.com', 'doctor123'),
+('jane@vroch.com', 'patient123'),
+('meredith@vroch.com', 'password'),
+('mark@vroch.com', 'password');

@@ -1,95 +1,137 @@
-# VROCH - Hospital Management System (Node.js + PostgreSQL)
+# VROCH Backend System
 
-This is a full-stack backend system for managing a hospital's operations, built using **Node.js**, **Express**, and **PostgreSQL (pgAdmin)**. It includes RESTful APIs and an interactive HTML-based frontend interface.
-
----
-
-## Requirements
-
-Make sure the machine you run this project on has:
-
-- [Node.js](https://nodejs.org/)
-- [PostgreSQL + pgAdmin](https://www.postgresql.org/download/)
+VROCH is a hospital management system developed with **Node.js**, **Express**, and **PostgreSQL**, featuring secure authentication, role-based access, and a full-featured admin dashboard.
 
 ---
 
-## How to Run the Project
+## Technologies Used
 
-### 1. Install Node Modules
+- Node.js + Express.js
+- PostgreSQL (managed via pgAdmin)
+- RESTful API architecture
+- JWT authentication
+- bcrypt password hashing
+- HTML/CSS/JS frontend (no framework)
+- Ngrok for temporary hosting
 
-Open terminal inside the project folder and run:
+---
 
+## Project Structure
+
+```
+VROCH/
+├── controllers/
+│   ├── authentication/
+│   │   └── authController.js
+│   ├── databaseAdminBoard/
+│   │   └── usersController.js
+│   └── admin/
+│       └── adminPasswordsController.js
+│
+├── middleware/
+│   └── verifyToken.js
+│
+├── routes/
+│   ├── authentication/
+│   │   └── auth.js
+│   ├── databaseAdminBoard/
+│   │   └── users.js
+│   └── admin/
+│       └── admin.js
+│
+├── panels/
+│   └── [14 HTML Panel Files]
+│
+├── public/
+│   ├── [login.html, register.html, databaseTest.html, etc.]
+│   └── panels/
+│       └── [14 HTML Panel Files]
+│
+├── db.js
+├── index.js
+├── .env
+└── package.json
+```
+
+---
+
+## How to Run the Project Locally
+
+### 1. Clone the repository and navigate into it:
+```bash
+git clone <your-repo-url>
+cd VROCH
+```
+
+### 2. Install dependencies:
 ```bash
 npm install
 ```
 
----
-
-### 2. Create PostgreSQL Database
-
-Open **pgAdmin** and:
-
-- Create a new database called `VROCH`
-- Open `resetDemoData.sql` or `createAllTables.sql` from the project
-- Paste and run it in pgAdmin's Query Tool to generate tables and demo data
-
----
-
-### 3. Configure Database Connection
-
-In `db.js`, update your local PostgreSQL credentials:
-
-```js
-const pool = new Pool({
-  user: 'your_pg_user',
-  host: 'localhost',
-  database: 'VROCH',
-  password: 'your_pg_password',
-  port: 5432
-});
+### 3. Set up your `.env` file:
+```
+PORT=5000
+JWT_SECRET=yourSecretKey
+JWT_EXPIRES_IN=2h
 ```
 
----
+### 4. Start your PostgreSQL server and run:
+- `createAllTables.sql` to initialize your database
+- `resetDemoData_hashed.sql` to insert users and data
 
-### 4. Start the Server
-
-Start the backend using:
-
+### 5. Start your backend server:
 ```bash
 node index.js
 ```
 
-Or if you're using `nodemon`:
-
+### 6. Optional: Expose via ngrok
 ```bash
-npx nodemon index.js
+ngrok http 5000
 ```
 
 ---
 
-### 5. Open the Interface
+## Authentication System
 
-Launch the frontend by opening:
-
-```
-http://localhost:5000/index.html
-```
-
-Use the navigation menu to access and control the hospital system.
+- **Register/Login**: Auth routes create JWT tokens
+- **Role-based redirect**:
+  - `admin` → `databaseTest.html`
+  - `doctor` & `patient` → `under-development.html`
+- **Token stored in localStorage**, passed in headers for all requests
 
 ---
 
-## Common Issues
+## Admin Features
 
-- `"invalid input syntax for type integer: 'undefined'"`  
-  → Means the ID field was left empty or missing. Ensure input exists before fetch.
+- 14 modules (users, patients, doctors, prescriptions, etc.)
+- Each module supports CRUD via dashboard UI
+- Token-protected admin routes
+- Plaintext passwords stored in `user_passwords` for admin auditing
 
 ---
 
-## Credits
+## Bonus Features
 
-Developed using:
-- Node.js
-- Express.js
-- PostgreSQL + pgAdmin
-- HTML, CSS, JS
+- `admin-passwords.html`: View all email-password pairs (separate table)
+- Passwords stored at registration & admin-creation time
+- Panels.js manages logic for all dashboard buttons
+- Ngrok support for public access
+
+---
+
+## Default Demo Accounts
+
+| Role   | Email                | Password   |
+|--------|----------------------|------------|
+| Admin  | admin@vroch.com      | admin123   |
+| Doctor | strange@vroch.com    | doctor123  |
+| Doctor | jane@vroch.com       | patient123 |
+| Patient| meredith@vroch.com   | password   |
+| Patient| mark@vroch.com       | password   |
+
+---
+
+## Contact
+
+For support or questions, contact the developer.
+

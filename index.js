@@ -10,24 +10,26 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API Routes
-app.use('/api/users', require('./routes/users'));
-app.use('/api/doctors', require('./routes/doctors'));
-app.use('/api/patients', require('./routes/patients'));
-app.use('/api/appointments', require('./routes/appointments'));
-app.use('/api/prescriptions', require('./routes/prescriptions'));
-app.use('/api/medical-records', require('./routes/medicalRecords'));
-app.use('/api/bills', require('./routes/bills'));
-app.use('/api/subscriptions', require('./routes/subscriptions'));
-app.use('/api/messages', require('./routes/messages'));
-app.use('/api/notifications', require('./routes/notifications'));
-app.use('/api/pharmacy-orders', require('./routes/pharmacyOrders'));
-app.use('/api/support-tickets', require('./routes/supportTickets'));
-app.use('/api/services', require('./routes/services'));
-app.use('/api/programs', require('./routes/programs'));
+app.use('/api/users', require('./routes/databaseAdminBoard/users'));
+app.use('/api/doctors', require('./routes/databaseAdminBoard/doctors'));
+app.use('/api/patients', require('./routes/databaseAdminBoard/patients'));
+app.use('/api/appointments', require('./routes/databaseAdminBoard/appointments'));
+app.use('/api/prescriptions', require('./routes/databaseAdminBoard/prescriptions'));
+app.use('/api/medical-records', require('./routes/databaseAdminBoard/medicalRecords'));
+app.use('/api/bills', require('./routes/databaseAdminBoard/bills'));
+app.use('/api/subscriptions', require('./routes/databaseAdminBoard/subscriptions'));
+app.use('/api/messages', require('./routes/databaseAdminBoard/messages'));
+app.use('/api/notifications', require('./routes/databaseAdminBoard/notifications'));
+app.use('/api/pharmacy-orders', require('./routes/databaseAdminBoard/pharmacyOrders'));
+app.use('/api/support-tickets', require('./routes/databaseAdminBoard/supportTickets'));
+app.use('/api/services', require('./routes/databaseAdminBoard/services'));
+app.use('/api/programs', require('./routes/databaseAdminBoard/programs'));
+app.use('/api/auth', require('./routes/authentication/auth'));
+app.use('/api/admin', require('./routes/admin/admin'));
 
 // Serve frontend
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
 
 // Start Server

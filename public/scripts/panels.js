@@ -1,6 +1,13 @@
 // panels.js
 let currentPanel = "";
 
+function authHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + localStorage.getItem('token')
+  };
+}
+
 function bindPanelEvents(name) {
   const fnMap = panelFunctions[name];
   if (!fnMap) return;
@@ -12,6 +19,13 @@ function bindPanelEvents(name) {
 }
 
 function showOutput(data) {
+  if (data?.error === 'jwt expired' || data?.error === 'invalid token') {
+    alert('Session expired. Please log in again.');
+    localStorage.clear();
+    window.location.href = 'login.html';
+    return;
+  }
+
   const output = document.getElementById('output');
   output.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
 }
@@ -19,19 +33,19 @@ function showOutput(data) {
 const panelFunctions = {
   users: {
     getAllUsers: async () => {
-      const res = await fetch('/api/users');
+      const res = await fetch('/api/users', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getUserById: async () => {
       const id = document.getElementById('userId')?.value;
-      const res = await fetch(`/api/users/${id}`);
+      const res = await fetch(`/api/users/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createUser: async () => {
       const body = {
         full_name: document.getElementById('full_name')?.value,
         email: document.getElementById('email')?.value,
-        password_hash: document.getElementById('password_hash')?.value,
+        password: document.getElementById('password')?.value,
         role: document.getElementById('role')?.value,
         phone: document.getElementById('phone')?.value,
         gender: document.getElementById('gender')?.value,
@@ -39,7 +53,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/users', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -49,6 +63,7 @@ const panelFunctions = {
       const body = {
         full_name: document.getElementById('full_name')?.value,
         email: document.getElementById('email')?.value,
+        password: document.getElementById('password')?.value,
         role: document.getElementById('role')?.value,
         phone: document.getElementById('phone')?.value,
         gender: document.getElementById('gender')?.value,
@@ -56,26 +71,29 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/users/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deleteUser: async () => {
       const id = document.getElementById('userId')?.value;
-      const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/users/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },  
 
   appointments: {
     getAllAppointments: async () => {
-      const res = await fetch('/api/appointments');
+      const res = await fetch('/api/appointments', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getAppointmentById: async () => {
       const id = document.getElementById('appointmentId')?.value;
-      const res = await fetch(`/api/appointments/${id}`);
+      const res = await fetch(`/api/appointments/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createAppointment: async () => {
@@ -89,7 +107,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/appointments', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -106,26 +124,29 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/appointments/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deleteAppointment: async () => {
       const id = document.getElementById('appointmentId')?.value;
-      const res = await fetch(`/api/appointments/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/appointments/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },
   
   bills: {
     getAllBills: async () => {
-      const res = await fetch('/api/bills');
+      const res = await fetch('/api/bills', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getBillById: async () => {
       const id = document.getElementById('billId')?.value;
-      const res = await fetch(`/api/bills/${id}`);
+      const res = await fetch(`/api/bills/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createBill: async () => {
@@ -138,7 +159,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/bills', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -154,26 +175,29 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/bills/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deleteBill: async () => {
       const id = document.getElementById('billId')?.value;
-      const res = await fetch(`/api/bills/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/bills/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },
 
   doctors: {
     getAllDoctors: async () => {
-      const res = await fetch('/api/doctors');
+      const res = await fetch('/api/doctors', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getDoctorById: async () => {
       const id = document.getElementById('doctorId')?.value;
-      const res = await fetch(`/api/doctors/${id}`);
+      const res = await fetch(`/api/doctors/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createDoctor: async () => {
@@ -187,7 +211,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/doctors', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -204,26 +228,29 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/doctors/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deleteDoctor: async () => {
       const id = document.getElementById('doctorId')?.value;
-      const res = await fetch(`/api/doctors/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/doctors/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },
   
   'medical-records': {
     getAllMedicalRecords: async () => {
-      const res = await fetch('/api/medical-records');
+      const res = await fetch('/api/medical-records', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getMedicalRecordById: async () => {
       const id = document.getElementById('medicalRecordsId')?.value;
-      const res = await fetch(`/api/medical-records/${id}`);
+      const res = await fetch(`/api/medical-records/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createMedicalRecord: async () => {
@@ -236,7 +263,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/medical-records', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -252,26 +279,29 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/medical-records/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deleteMedicalRecord: async () => {
       const id = document.getElementById('medicalRecordsId')?.value;
-      const res = await fetch(`/api/medical-records/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/medical-records/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },
 
   messages: {
     getAllMessages: async () => {
-      const res = await fetch('/api/messages');
+      const res = await fetch('/api/messages', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getMessageById: async () => {
       const id = document.getElementById('messageId')?.value;
-      const res = await fetch(`/api/messages/${id}`);
+      const res = await fetch(`/api/messages/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createMessage: async () => {
@@ -283,7 +313,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -298,26 +328,29 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/messages/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deleteMessage: async () => {
       const id = document.getElementById('messageId')?.value;
-      const res = await fetch(`/api/messages/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/messages/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },
 
   notifications: {
     getAllNotifications: async () => {
-      const res = await fetch('/api/notifications');
+      const res = await fetch('/api/notifications', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getNotificationById: async () => {
       const id = document.getElementById('notificationId')?.value;
-      const res = await fetch(`/api/notifications/${id}`);
+      const res = await fetch(`/api/notifications/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createNotification: async () => {
@@ -329,7 +362,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/notifications', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -342,28 +375,31 @@ const panelFunctions = {
         body: document.getElementById('body')?.value,
         is_read: document.getElementById('is_read')?.value === 'true',
       };
-      const res = await fetch(`/api/notifications/${id}`, {
+      const res = await fetch(`/api/notifications/${id}`, { headers: authHeaders() }, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deleteNotification: async () => {
       const id = document.getElementById('notificationId')?.value;
-      const res = await fetch(`/api/notifications/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/notifications/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },
 
   patients: {
     getAllPatients: async () => {
-      const res = await fetch('/api/patients');
+      const res = await fetch('/api/patients', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getPatientById: async () => {
       const id = document.getElementById('patientId')?.value;
-      const res = await fetch(`/api/patients/${id}`);
+      const res = await fetch(`/api/patients/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createPatient: async () => {
@@ -378,7 +414,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/patients', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -396,26 +432,29 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/patients/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deletePatient: async () => {
       const id = document.getElementById('patientId')?.value;
-      const res = await fetch(`/api/patients/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/patients/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },
 
   'pharmacy-orders': {
     getAllPharmacy_orders: async () => {
-      const res = await fetch('/api/pharmacy-orders');
+      const res = await fetch('/api/pharmacy-orders', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getPharmacy_ordersById: async () => {
       const id = document.getElementById('pharmacy_ordersId')?.value;
-      const res = await fetch(`/api/pharmacy-orders/${id}`);
+      const res = await fetch(`/api/pharmacy-orders/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createPharmacy_orders: async () => {
@@ -428,7 +467,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/pharmacy-orders', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -444,26 +483,29 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/pharmacy-orders/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deletePharmacy_orders: async () => {
       const id = document.getElementById('pharmacy_ordersId')?.value;
-      const res = await fetch(`/api/pharmacy-orders/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/pharmacy-orders/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },
 
   prescriptions: {
     getAllPrescriptions: async () => {
-      const res = await fetch('/api/prescriptions');
+      const res = await fetch('/api/prescriptions', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getPrescriptionById: async () => {
       const id = document.getElementById('prescriptionId')?.value;
-      const res = await fetch(`/api/prescriptions/${id}`);
+      const res = await fetch(`/api/prescriptions/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createPrescription: async () => {
@@ -476,7 +518,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/prescriptions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -492,26 +534,29 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/prescriptions/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deletePrescription: async () => {
       const id = document.getElementById('prescriptionId')?.value;
-      const res = await fetch(`/api/prescriptions/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/prescriptions/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },
 
   programs: {
     getAllPrograms: async () => {
-      const res = await fetch('/api/programs');
+      const res = await fetch('/api/programs', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getProgramById: async () => {
       const id = document.getElementById('programId')?.value;
-      const res = await fetch(`/api/programs/${id}`);
+      const res = await fetch(`/api/programs/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createProgram: async () => {
@@ -524,7 +569,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/programs', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -540,26 +585,29 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/programs/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deleteProgram: async () => {
       const id = document.getElementById('programId')?.value;
-      const res = await fetch(`/api/programs/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/programs/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },  
   
   'support-tickets': {
     getAllSupport_tickets: async () => {
-      const res = await fetch('/api/support-tickets');
+      const res = await fetch('/api/support-tickets', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getSupport_ticketsById: async () => {
       const id = document.getElementById('support_ticketsId')?.value;
-      const res = await fetch(`/api/support-tickets/${id}`);
+      const res = await fetch(`/api/support-tickets/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createSupport_tickets: async () => {
@@ -571,7 +619,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/support-tickets', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -586,26 +634,29 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/support-tickets/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deleteSupport_tickets: async () => {
       const id = document.getElementById('support_ticketsId')?.value;
-      const res = await fetch(`/api/support-tickets/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/support-tickets/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },
 
   subscriptions: {
     getAllSubscriptions: async () => {
-      const res = await fetch('/api/subscriptions');
+      const res = await fetch('/api/subscriptions', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getSubscriptionById: async () => {
       const id = document.getElementById('subscriptionId')?.value;
-      const res = await fetch(`/api/subscriptions/${id}`);
+      const res = await fetch(`/api/subscriptions/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createSubscription: async () => {
@@ -618,7 +669,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/subscriptions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -634,26 +685,29 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/subscriptions/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deleteSubscription: async () => {
       const id = document.getElementById('subscriptionId')?.value;
-      const res = await fetch(`/api/subscriptions/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/subscriptions/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   },
 
   services: {
     getAllServices: async () => {
-      const res = await fetch('/api/services');
+      const res = await fetch('/api/services', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getServiceById: async () => {
       const id = document.getElementById('serviceId')?.value;
-      const res = await fetch(`/api/services/${id}`);
+      const res = await fetch(`/api/services/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createService: async () => {
@@ -664,7 +718,7 @@ const panelFunctions = {
       };
       const res = await fetch('/api/services', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
@@ -678,16 +732,19 @@ const panelFunctions = {
       };
       const res = await fetch(`/api/services/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify(body),
       });
       showOutput(await res.json());
     },
     deleteService: async () => {
       const id = document.getElementById('serviceId')?.value;
-      const res = await fetch(`/api/services/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/services/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
       showOutput(await res.json());
-    }
+    }    
   }  
 };
 
@@ -700,7 +757,7 @@ function collect(fields) {
 function post(body) {
   return {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders(),
     body: JSON.stringify(body)
   };
 }
@@ -708,7 +765,7 @@ function post(body) {
 function put(body) {
   return {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders(),
     body: JSON.stringify(body)
   };
 }
