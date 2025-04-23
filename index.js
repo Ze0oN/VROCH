@@ -31,6 +31,7 @@ app.use('/api/programs', require('./routes/databaseAdminBoard/programs'));
 app.use('/api/auth', require('./routes/authentication/auth'));
 app.use('/api/admin', require('./routes/admin/admin'));
 app.use('/api/dashboard', require('./routes/dashboard/dashboard'))
+app.use('/api/doctor', require('./routes/doctor/doctor'))
 
 // Serve frontend
 app.get('/', (req, res) => {
