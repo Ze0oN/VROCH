@@ -30,6 +30,7 @@ app.use('/api/services', require('./routes/databaseAdminBoard/services'));
 app.use('/api/programs', require('./routes/databaseAdminBoard/programs'));
 app.use('/api/auth', require('./routes/authentication/auth'));
 app.use('/api/admin', require('./routes/admin/admin'));
+app.use('/api/dashboard', require('./routes/dashboard/dashboard'))
 
 // Serve frontend
 app.get('/', (req, res) => {
