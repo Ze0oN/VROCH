@@ -1,137 +1,129 @@
-# VROCH Backend System
 
-VROCH is a hospital management system developed with **Node.js**, **Express**, and **PostgreSQL**, featuring secure authentication, role-based access, and a full-featured admin dashboard.
+# VROCH - Hospital Management Web System
+
+VROCH is a full-stack hospital management system built using Node.js, Express, PostgreSQL, and vanilla HTML/CSS/JS. It supports different user roles: Admin, Doctor, and Patient — each with dedicated dashboards and tailored functionalities.
 
 ---
 
 ## Technologies Used
 
-- Node.js + Express.js
-- PostgreSQL (managed via pgAdmin)
-- RESTful API architecture
-- JWT authentication
-- bcrypt password hashing
-- HTML/CSS/JS frontend (no framework)
-- Ngrok for temporary hosting
+- **Backend**: Node.js, Express.js
+- **Database**: PostgreSQL (managed using pgAdmin)
+- **Authentication**: JWT, bcrypt.js, Google OAuth, Facebook OAuth
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Deployment (local)**: `ngrok` for local testing with webhooks
 
 ---
 
-## Project Structure
+## Folder Structure Overview
 
 ```
-VROCH/
-├── controllers/
-│   ├── authentication/
-│   │   └── authController.js
-│   ├── databaseAdminBoard/
-│   │   └── usersController.js
-│   └── admin/
-│       └── adminPasswordsController.js
+/VROCH
 │
-├── middleware/
-│   └── verifyToken.js
+├── index.js                # Main entry point
+├── db.js                   # PostgreSQL database connection
+├── .env                    # Environment variables (JWT_SECRET, DB configs, etc.)
 │
-├── routes/
-│   ├── authentication/
-│   │   └── auth.js
-│   ├── databaseAdminBoard/
-│   │   └── users.js
-│   └── admin/
-│       └── admin.js
+├── /routes                 # Route definitions
+│   ├── /auth               # Auth routes (login, register, social auth)
+│   ├── /dashboard          # Role-based dashboard routing
+│   ├── /patient            # Patient-specific endpoints
+│   ├── /doctor             # Doctor-specific endpoints
+│   ├── /admin              # Admin functionalities
 │
-├── panels/
-│   └── [14 HTML Panel Files]
+├── /controllers            # Business logic for each route
+│   ├── /authentication     # Auth controllers
+│   ├── /patient            # Patient controllers
+│   ├── /doctor             # Doctor controllers
+│   ├── /databaseAdminBoard # Database controllers
+│   ├── /admin              # Admin controllers
 │
-├── public/
-│   ├── [login.html, register.html, databaseTest.html, etc.]
-│   └── panels/
-│       └── [14 HTML Panel Files]
+├── /public                 # HTML/CSS/JS for frontend
+│   ├── /panels             # Panel UI files for admin dashboard
+│   ├── login.html
+│   ├── register.html
+│   ├── under-development.html
+│   ├── admin-dashboard.html
+│   ├── doctor-dashboard.html
+│   ├── patient-dashboard.html
+│   ├── /admin              # HTML/CSS/JS for admin page
+│   ├── /doctor             # HTML/CSS/JS for doctor page
+│   ├── /patient            # HTML/CSS/JS for admin page
 │
-├── db.js
-├── index.js
-├── .env
+├── /middleware             # JWT token verification and access control
+│
+├── README.md
 └── package.json
 ```
 
 ---
 
+## Features
+
+- Admin:
+  - Manage users (CRUD)
+  - View and control medical records, billing, programs, etc.
+- Doctor:
+  - View assigned patients
+  - Issue prescriptions
+  - View appointments
+- Patient:
+  - View own medical records
+  - View prescriptions & appointments
+  - Update own profile
+- Auth:
+  - Email/password login & registration
+  - Google and Facebook login
+  - Token-based role redirection
+- Logging and Debugging:
+  - Debug logs included in backend logic
+  - Token-based access protected by middleware
+
+---
+
 ## How to Run the Project Locally
 
-### 1. Clone the repository and navigate into it:
+### 1. Clone the repository
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/your-username/VROCH.git
 cd VROCH
 ```
 
-### 2. Install dependencies:
+### 2. Install dependencies
 ```bash
 npm install
 ```
 
-### 3. Set up your `.env` file:
-```
+### 3. Setup PostgreSQL database
+- Create a new database (e.g., `vroch`)
+- Import `createAllTables.sql` and `resetDemoData.sql`
+
+### 4. Configure `.env`
+```env
 PORT=5000
-JWT_SECRET=yourSecretKey
-JWT_EXPIRES_IN=2h
+DATABASE_URL=your_postgres_connection_string
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=1h
+GOOGLE_CLIENT_ID=your_google_id
+GOOGLE_CLIENT_SECRET=your_google_secret
+FACEBOOK_CLIENT_ID=your_facebook_id
+FACEBOOK_CLIENT_SECRET=your_facebook_secret
 ```
 
-### 4. Start your PostgreSQL server and run:
-- `createAllTables.sql` to initialize your database
-- `resetDemoData_hashed.sql` to insert users and data
-
-### 5. Start your backend server:
+### 5. Start the server
 ```bash
-node index.js
+npm start
 ```
 
-### 6. Optional: Expose via ngrok
-```bash
-ngrok http 5000
-```
+### 6. Test locally
+Visit: `http://localhost:5000/login.html` or use `ngrok http 5000` for public access.
 
 ---
 
-## Authentication System
+## Author Notes
 
-- **Register/Login**: Auth routes create JWT tokens
-- **Role-based redirect**:
-  - `admin` → `databaseTest.html`
-  - `doctor` & `patient` → `under-development.html`
-- **Token stored in localStorage**, passed in headers for all requests
-
----
-
-## Admin Features
-
-- 14 modules (users, patients, doctors, prescriptions, etc.)
-- Each module supports CRUD via dashboard UI
-- Token-protected admin routes
-- Plaintext passwords stored in `user_passwords` for admin auditing
-
----
-
-## Bonus Features
-
-- `admin-passwords.html`: View all email-password pairs (separate table)
-- Passwords stored at registration & admin-creation time
-- Panels.js manages logic for all dashboard buttons
-- Ngrok support for public access
-
----
-
-## Default Demo Accounts
-
-| Role   | Email                | Password   |
-|--------|----------------------|------------|
-| Admin  | admin@vroch.com      | admin123   |
-| Doctor | strange@vroch.com    | doctor123  |
-| Doctor | jane@vroch.com       | patient123 |
-| Patient| meredith@vroch.com   | password   |
-| Patient| mark@vroch.com       | password   |
-
----
-
-## Contact
-
-For support or questions, contact the developer.
-
+This README reflects the latest build of VROCH including:
+- Patient dashboard views
+- Role-based backend security
+- Proper login token handling
+- Modern UI updates
