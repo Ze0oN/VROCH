@@ -1,0 +1,24 @@
+<div class="panel-container">
+    <h2>Doctor Time Slots Panel</h2>
+  
+    <label for="slotId">Slot ID</label>
+    <input type="number" id="slotId" placeholder="Enter Slot ID">
+  
+    <label for="doctor_id">Doctor ID</label>
+    <input type="number" id="doctor_id" placeholder="Enter Doctor ID">
+  
+    <label for="day_of_week">Day of the Week</label>
+    <input type="text" id="day_of_week" placeholder="e.g., Monday, Tuesday">
+  
+    <label for="start_time">Start Time</label>
+    <input type="time" id="start_time">
+  
+    <label for="end_time">End Time</label>
+    <input type="time" id="end_time">
+  
+    <button onclick="getTimeSlotsByDoctor()">Get Time Slots for Doctor</button>
+    <button onclick="createTimeSlot()">Create Time Slot</button>
+    <button onclick="updateTimeSlot()">Update Time Slot</button>
+    <button onclick="deleteTimeSlot()">Delete Time Slot</button>
+  </div>
+  

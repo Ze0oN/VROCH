@@ -138,6 +138,80 @@ const panelFunctions = {
       showOutput(await res.json());
     }    
   },
+
+  'doctor-time-slots': {
+    getTimeSlotsByDoctor: async () => {
+      const doctorId = document.getElementById('doctor_id')?.value;
+      const res = await fetch(`/api/doctor-time-slots/${doctorId}`, { headers: authHeaders() });
+      showOutput(await res.json());
+    },
+    createTimeSlot: async () => {
+      const body = {
+        doctor_id: document.getElementById('doctor_id')?.value,
+        day_of_week: document.getElementById('day_of_week')?.value,
+        start_time: document.getElementById('start_time')?.value,
+        end_time: document.getElementById('end_time')?.value,
+      };
+      const res = await fetch('/api/doctor-time-slots', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(body),
+      });
+      showOutput(await res.json());
+    },
+    updateTimeSlot: async () => {
+      const slotId = document.getElementById('slotId')?.value;
+      const body = {
+        doctor_id: document.getElementById('doctor_id')?.value,
+        day_of_week: document.getElementById('day_of_week')?.value,
+        start_time: document.getElementById('start_time')?.value,
+        end_time: document.getElementById('end_time')?.value,
+      };
+      const res = await fetch(`/api/doctor-time-slots/${slotId}`, {
+        method: 'PUT',
+        headers: authHeaders(),
+        body: JSON.stringify(body),
+      });
+      showOutput(await res.json());
+    },
+    deleteTimeSlot: async () => {
+      const slotId = document.getElementById('slotId')?.value;
+      const res = await fetch(`/api/doctor-time-slots/${slotId}`, {
+        method: 'DELETE',
+        headers: authHeaders(),
+      });
+      showOutput(await res.json());
+    }
+  },
+
+  'appointment-status-logs': {
+    getLogsByAppointment: async () => {
+      const appointmentId = document.getElementById('appointment_id')?.value;
+      const res = await fetch(`/api/appointment-status-logs/${appointmentId}`, { headers: authHeaders() });
+      showOutput(await res.json());
+    },
+    createStatusLog: async () => {
+      const body = {
+        appointment_id: document.getElementById('appointment_id')?.value,
+        old_status: document.getElementById('old_status')?.value,
+        new_status: document.getElementById('new_status')?.value,
+      };
+      const res = await fetch('/api/appointment-status-logs', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(body),
+      });
+      showOutput(await res.json());
+    },
+    deleteStatusLog: async () => {
+      const logId = document.getElementById('logId')?.value;
+      const res = await fetch(`/api/appointment-status-logs/${logId}`, {
+        method: 'DELETE',
+        headers: authHeaders(),
+      });
+      showOutput(await res.json());
+    }
+  },
   
   bills: {
     getAllBills: async () => {

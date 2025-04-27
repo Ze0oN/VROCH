@@ -1,9 +1,8 @@
-const pool = require('../../db'); // PostgreSQL connection pool
+const pool = require('../../db');
 
 // GET all appointments (admin only)
 exports.getAllAppointments = async (req, res) => {
   try {
-    // Only admins can access all appointments
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Access denied: Admins only.' });
     }
@@ -43,7 +42,8 @@ exports.createAppointment = async (req, res) => {
     patient_id,
     doctor_id,
     appointment_date,
-    appointment_time,
+    appointment_start_time,
+    appointment_end_time,
     status,
     notes
   } = req.body;
@@ -51,9 +51,9 @@ exports.createAppointment = async (req, res) => {
   try {
     const result = await pool.query(
       `INSERT INTO appointments 
-        (patient_id, doctor_id, appointment_date, appointment_time, status, notes)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [patient_id, doctor_id, appointment_date, appointment_time, status, notes]
+        (patient_id, doctor_id, appointment_date, appointment_start_time, appointment_end_time, status, notes)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [patient_id, doctor_id, appointment_date, appointment_start_time, appointment_end_time, status, notes]
     );
 
     res.status(201).json(result.rows[0]);
@@ -72,7 +72,8 @@ exports.updateAppointment = async (req, res) => {
     patient_id,
     doctor_id,
     appointment_date,
-    appointment_time,
+    appointment_start_time,
+    appointment_end_time,
     status,
     notes
   } = req.body;
@@ -80,10 +81,10 @@ exports.updateAppointment = async (req, res) => {
   try {
     const result = await pool.query(
       `UPDATE appointments 
-       SET patient_id=$1, doctor_id=$2, appointment_date=$3, appointment_time=$4,
-           status=$5, notes=$6
-       WHERE id=$7 RETURNING *`,
-      [patient_id, doctor_id, appointment_date, appointment_time, status, notes, req.params.id]
+       SET patient_id=$1, doctor_id=$2, appointment_date=$3, appointment_start_time=$4,
+           appointment_end_time=$5, status=$6, notes=$7
+       WHERE id=$8 RETURNING *`,
+      [patient_id, doctor_id, appointment_date, appointment_start_time, appointment_end_time, status, notes, req.params.id]
     );
 
     if (result.rows.length === 0) {

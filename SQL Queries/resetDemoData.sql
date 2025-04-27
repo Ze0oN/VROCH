@@ -1,5 +1,5 @@
 -- DROP ALL TABLES IF THEY EXIST
-DROP TABLE IF EXISTS user_passwords, health_programs, services, support_tickets, pharmacy_orders, notifications, messages, subscriptions, bills, medical_records, prescriptions, appointments, patients, doctors, users CASCADE;
+DROP TABLE IF EXISTS appointment_status_logs, user_passwords, health_programs, services, support_tickets, pharmacy_orders, notifications, messages, subscriptions, bills, medical_records, prescriptions, appointments, doctor_time_slots, patients, doctors, users CASCADE;
 
 -- USERS TABLE
 CREATE TABLE users (
@@ -15,7 +15,6 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Existing Users
 INSERT INTO users (full_name, email, password_hash, role, phone, gender, date_of_birth) VALUES
 ('Admin User', 'admin@vroch.com', '$2b$10$Nm6Kfq7exRO4pdpznoK6lOYakzHUg6qWJXaAhv9xmgD77Do//4ksO', 'admin', '1111111111', 'other', '1980-01-01'),
 ('Dr. Strange', 'strange@vroch.com', '$2b$10$j8aygi5zKmczoRel7aMf7.d65DTI1KdVinoWnpMr4RiwRdWcURoPm', 'doctor', '2222222222', 'male', '1975-05-10'),
@@ -68,21 +67,95 @@ CREATE TABLE appointments (
     patient_id INT REFERENCES patients(id),
     doctor_id INT REFERENCES doctors(id),
     appointment_date DATE,
-    appointment_time TIME,
+    appointment_start_time TIME,
+    appointment_end_time TIME,
     status VARCHAR(20),
     notes TEXT
 );
 
-INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, status, notes) VALUES
-(1, 1, '2025-05-01', '10:00', 'confirmed', 'Initial consultation'),
-(2, 2, '2025-05-03', '14:00', 'pending', 'Follow-up consultation'),
-(3, 1, '2025-05-05', '09:30', 'confirmed', 'Routine check-up'),
-(4, 3, '2025-05-06', '15:45', 'cancelled', 'Pediatric exam'),
-(1, 3, '2025-05-10', '13:00', 'pending', 'Specialist referral discussion'),
-(2, 1, '2025-05-11', '08:45', 'confirmed', 'Lab results follow-up'),
-(4, 1, '2025-05-15', '10:30', 'pending', 'Allergy assessment'),
-(3, 2, '2025-05-18', '09:00', 'confirmed', 'Dietary advice and planning');
+INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_start_time, appointment_end_time, status, notes) VALUES
+(1, 1, '2025-05-01', '10:00', '10:30', 'confirmed', 'Initial consultation'),
+(2, 2, '2025-05-03', '14:00', '14:30', 'pending', 'Follow-up consultation'),
+(3, 1, '2025-05-05', '09:30', '10:00', 'confirmed', 'Routine check-up'),
+(4, 3, '2025-05-06', '15:45', '16:15', 'cancelled', 'Pediatric exam'),
+(1, 3, '2025-05-10', '13:00', '13:30', 'pending', 'Specialist referral discussion'),
+(2, 1, '2025-05-11', '08:45', '09:15', 'confirmed', 'Lab results follow-up'),
+(4, 1, '2025-05-15', '10:30', '11:00', 'pending', 'Allergy assessment'),
+(3, 2, '2025-05-18', '09:00', '09:30', 'confirmed', 'Dietary advice and planning');
 
+
+-- TIME SLOTS TABLE
+CREATE TABLE doctor_time_slots (
+    id SERIAL PRIMARY KEY,
+    doctor_id INT REFERENCES doctors(id),
+    day_of_week VARCHAR(10),
+    start_time TIME,
+    end_time TIME
+);
+
+-- Dr. Strange (Doctor ID = 1) - Neurology
+INSERT INTO doctor_time_slots (doctor_id, day_of_week, start_time, end_time) VALUES
+(1, 'Monday', '09:00', '09:30'),
+(1, 'Monday', '09:30', '10:00'),
+(1, 'Monday', '10:00', '10:30'),
+(1, 'Monday', '10:30', '11:00'),
+(1, 'Monday', '11:00', '11:30'),
+(1, 'Monday', '11:30', '12:00'),
+
+(1, 'Wednesday', '13:00', '13:30'),
+(1, 'Wednesday', '13:30', '14:00'),
+(1, 'Wednesday', '14:00', '14:30'),
+(1, 'Wednesday', '14:30', '15:00'),
+(1, 'Wednesday', '15:00', '15:30'),
+(1, 'Wednesday', '15:30', '16:00');
+
+-- Dr. Meredith Grey (Doctor ID = 2) - Cardiology
+INSERT INTO doctor_time_slots (doctor_id, day_of_week, start_time, end_time) VALUES
+(2, 'Tuesday', '09:00', '09:30'),
+(2, 'Tuesday', '09:30', '10:00'),
+(2, 'Tuesday', '10:00', '10:30'),
+(2, 'Tuesday', '10:30', '11:00'),
+(2, 'Tuesday', '11:00', '11:30'),
+(2, 'Tuesday', '11:30', '12:00'),
+
+(2, 'Thursday', '13:00', '13:30'),
+(2, 'Thursday', '13:30', '14:00'),
+(2, 'Thursday', '14:00', '14:30'),
+(2, 'Thursday', '14:30', '15:00'),
+(2, 'Thursday', '15:00', '15:30'),
+(2, 'Thursday', '15:30', '16:00');
+
+-- Dr. Karev Alex (Doctor ID = 3) - Pediatrics
+INSERT INTO doctor_time_slots (doctor_id, day_of_week, start_time, end_time) VALUES
+(3, 'Wednesday', '09:00', '09:30'),
+(3, 'Wednesday', '09:30', '10:00'),
+(3, 'Wednesday', '10:00', '10:30'),
+(3, 'Wednesday', '10:30', '11:00'),
+(3, 'Wednesday', '11:00', '11:30'),
+(3, 'Wednesday', '11:30', '12:00'),
+
+(3, 'Friday', '13:00', '13:30'),
+(3, 'Friday', '13:30', '14:00'),
+(3, 'Friday', '14:00', '14:30'),
+(3, 'Friday', '14:30', '15:00'),
+(3, 'Friday', '15:00', '15:30'),
+(3, 'Friday', '15:30', '16:00');
+
+
+-- APPOINTMENTS STATUS LOG TABLE
+CREATE TABLE appointment_status_logs (
+    id SERIAL PRIMARY KEY,
+    appointment_id INT REFERENCES appointments(id),
+    old_status VARCHAR(20),
+    new_status VARCHAR(20),
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO appointment_status_logs (appointment_id, old_status, new_status) VALUES
+(1, 'pending', 'confirmed'),
+(2, 'pending', 'pending'),
+(3, 'pending', 'confirmed'),
+(4, 'pending', 'cancelled');
 
 -- PRESCRIPTIONS TABLE
 CREATE TABLE prescriptions (

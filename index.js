@@ -14,10 +14,13 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API Routes
+
 app.use('/api/users', require('./routes/databaseAdminBoard/users'));
 app.use('/api/doctors', require('./routes/databaseAdminBoard/doctors'));
 app.use('/api/patients', require('./routes/databaseAdminBoard/patients'));
 app.use('/api/appointments', require('./routes/databaseAdminBoard/appointments'));
+app.use('/api/doctor-time-slots', require('./routes/databaseAdminBoard/doctorTimeSlots'));
+app.use('/api/appointment-status-logs', require('./routes/databaseAdminBoard/appointmentStatusLogs'));
 app.use('/api/prescriptions', require('./routes/databaseAdminBoard/prescriptions'));
 app.use('/api/medical-records', require('./routes/databaseAdminBoard/medicalRecords'));
 app.use('/api/bills', require('./routes/databaseAdminBoard/bills'));
@@ -28,11 +31,17 @@ app.use('/api/pharmacy-orders', require('./routes/databaseAdminBoard/pharmacyOrd
 app.use('/api/support-tickets', require('./routes/databaseAdminBoard/supportTickets'));
 app.use('/api/services', require('./routes/databaseAdminBoard/services'));
 app.use('/api/programs', require('./routes/databaseAdminBoard/programs'));
+
 app.use('/api/auth', require('./routes/authentication/auth'));
-app.use('/api/admin', require('./routes/admin/admin'));
+
 app.use('/api/dashboard', require('./routes/dashboard/dashboard'))
+
+app.use('/api/admin', require('./routes/admin/admin'));
+
 app.use('/api/doctor', require('./routes/doctor/doctor'))
+
 app.use('/api/patient', require('./routes/patient/patient'));
+app.use('/api/patient/appointments', require('./routes/patient/patientAppointments'));
 
 // Serve frontend
 app.get('/', (req, res) => {

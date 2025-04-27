@@ -1,0 +1,20 @@
+<div class="panel-container">
+    <h2>Appointment Status Logs Panel</h2>
+  
+    <label for="logId">Log ID</label>
+    <input type="number" id="logId" placeholder="Enter Log ID">
+  
+    <label for="appointment_id">Appointment ID</label>
+    <input type="number" id="appointment_id" placeholder="Enter Appointment ID">
+  
+    <label for="old_status">Old Status</label>
+    <input type="text" id="old_status" placeholder="e.g., pending, confirmed">
+  
+    <label for="new_status">New Status</label>
+    <input type="text" id="new_status" placeholder="e.g., confirmed, cancelled">
+  
+    <button onclick="getLogsByAppointment()">Get Logs by Appointment</button>
+    <button onclick="createStatusLog()">Create Status Log</button>
+    <button onclick="deleteStatusLog()">Delete Status Log</button>
+  </div>
+  
