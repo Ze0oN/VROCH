@@ -1,129 +1,103 @@
+# VROCH - Virtual Hospital Management System
 
-# VROCH - Hospital Management Web System
-
-VROCH is a full-stack hospital management system built using Node.js, Express, PostgreSQL, and vanilla HTML/CSS/JS. It supports different user roles: Admin, Doctor, and Patient — each with dedicated dashboards and tailored functionalities.
-
----
-
-## Technologies Used
-
-- **Backend**: Node.js, Express.js
-- **Database**: PostgreSQL (managed using pgAdmin)
-- **Authentication**: JWT, bcrypt.js, Google OAuth, Facebook OAuth
-- **Frontend**: HTML5, CSS3, JavaScript
-- **Deployment (local)**: `ngrok` for local testing with webhooks
+**VROCH** is a full-stack virtual hospital management platform designed to provide secure, role-based access for administrators, doctors, and patients. The system supports real-time appointment scheduling, medical record handling, notifications, and patient-doctor interaction through a simple, accessible interface.
 
 ---
 
-## Folder Structure Overview
+## ✨ Core Features
 
-```
-/VROCH
-│
-├── index.js                # Main entry point
-├── db.js                   # PostgreSQL database connection
-├── .env                    # Environment variables (JWT_SECRET, DB configs, etc.)
-│
-├── /routes                 # Route definitions
-│   ├── /auth               # Auth routes (login, register, social auth)
-│   ├── /dashboard          # Role-based dashboard routing
-│   ├── /patient            # Patient-specific endpoints
-│   ├── /doctor             # Doctor-specific endpoints
-│   ├── /admin              # Admin functionalities
-│
-├── /controllers            # Business logic for each route
-│   ├── /authentication     # Auth controllers
-│   ├── /patient            # Patient controllers
-│   ├── /doctor             # Doctor controllers
-│   ├── /databaseAdminBoard # Database controllers
-│   ├── /admin              # Admin controllers
-│
-├── /public                 # HTML/CSS/JS for frontend
-│   ├── /panels             # Panel UI files for admin dashboard
-│   ├── login.html
-│   ├── register.html
-│   ├── under-development.html
-│   ├── admin-dashboard.html
-│   ├── doctor-dashboard.html
-│   ├── patient-dashboard.html
-│   ├── /admin              # HTML/CSS/JS for admin page
-│   ├── /doctor             # HTML/CSS/JS for doctor page
-│   ├── /patient            # HTML/CSS/JS for admin page
-│
-├── /middleware             # JWT token verification and access control
-│
-├── README.md
-└── package.json
-```
+### 👤 Admin
+- View, filter, delete, and reassign any appointment
+- Manage doctor time slots and availability
+- View patient and doctor information
+- Access and monitor system updates
+- View all records and audit actions
+
+### 🩺 Doctor
+- View upcoming and past appointments
+- Change appointment status (confirmed, completed, cancelled)
+- Add medical records linked to completed appointments
+- Automatically notify patients when status changes
+- Access patient info directly from appointments
+
+### 🙋‍♀️ Patient
+- Book appointments by selecting specialization → doctor → time slot
+- View and cancel appointments
+- Get real-time notifications on appointment status
+- View medical records and prescriptions (from doctor)
 
 ---
 
-## Features
+## 🔔 Notification System
 
-- Admin:
-  - Manage users (CRUD)
-  - View and control medical records, billing, programs, etc.
-- Doctor:
-  - View assigned patients
-  - Issue prescriptions
-  - View appointments
-- Patient:
-  - View own medical records
-  - View prescriptions & appointments
-  - Update own profile
-- Auth:
-  - Email/password login & registration
-  - Google and Facebook login
-  - Token-based role redirection
-- Logging and Debugging:
-  - Debug logs included in backend logic
-  - Token-based access protected by middleware
+VROCH includes a full notification subsystem that logs important actions:
+
+- **To Doctor**: New appointment booked
+- **To Patient**: Appointment confirmed / completed / cancelled
+- Notifications are saved in the `notifications` table with read/unread status
 
 ---
 
-## How to Run the Project Locally
+## 🔐 Authentication & Security
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/your-username/VROCH.git
-cd VROCH
-```
-
-### 2. Install dependencies
-```bash
-npm install
-```
-
-### 3. Setup PostgreSQL database
-- Create a new database (e.g., `vroch`)
-- Import `createAllTables.sql` and `resetDemoData.sql`
-
-### 4. Configure `.env`
-```env
-PORT=5000
-DATABASE_URL=your_postgres_connection_string
-JWT_SECRET=your_jwt_secret
-JWT_EXPIRES_IN=1h
-GOOGLE_CLIENT_ID=your_google_id
-GOOGLE_CLIENT_SECRET=your_google_secret
-FACEBOOK_CLIENT_ID=your_facebook_id
-FACEBOOK_CLIENT_SECRET=your_facebook_secret
-```
-
-### 5. Start the server
-```bash
-npm start
-```
-
-### 6. Test locally
-Visit: `http://localhost:5000/login.html` or use `ngrok http 5000` for public access.
+- JWT authentication (stored in `localStorage`)
+- Role-based authorization middleware
+- Session checks and redirection upon expiration
 
 ---
 
-## Author Notes
+## 🛠 Technologies Used
 
-This README reflects the latest build of VROCH including:
-- Patient dashboard views
-- Role-based backend security
-- Proper login token handling
-- Modern UI updates
+- **Frontend**: HTML, CSS, JavaScript (vanilla)
+- **Backend**: Node.js + Express.js
+- **Database**: PostgreSQL
+- **Auth**: JWT
+- **Notifications**: Stored in DB table (`notifications`)
+
+---
+
+## ⚙️ Smart Features & Logic
+
+- ⏱ **Doctor Availability**: Patients can only book time slots predefined by admins per day of week
+- 🚫 **Safe Delete**: Admin cannot delete appointments with prescriptions (clear error message is returned)
+- 📅 **Overlap Check**: No duplicate bookings or overlaps allowed
+- 📂 **Medical Records**: Only doctors can add them for completed appointments
+- 📬 **Notification Auto-Insert**: Linked to booking and status update events
+
+---
+
+## ▶️ How to Run
+
+1. **Clone the repository**  
+   `git clone https://github.com/yourusername/vroch.git`
+
+2. **Install dependencies**  
+   Inside the project root:  
+   `npm install`
+
+3. **Create a `.env` file** with the following (or edit directly if config is hardcoded):
+
+   ```
+   PORT=5000
+   DATABASE_URL=postgresql://your_user:your_pass@localhost:5432/vroch
+   JWT_SECRET=your_jwt_secret
+   ```
+
+4. **Start PostgreSQL and import schema/data**  
+   Example:  
+   `psql -U your_user -d vroch -f resetDemoData.sql`
+
+5. **Run the server**  
+   `npm start`  
+   Or for development:  
+   `nodemon index.js`
+
+6. **Open browser** and visit:  
+   - `http://localhost:5000/public/login.html`  
+   - Role-based dashboard will redirect based on user
+
+---
+
+## 👨‍💻 Developed By
+
+This project is part of the VROCH Virtual Hospital initiative and was developed for advanced backend systems training and deployment testing.

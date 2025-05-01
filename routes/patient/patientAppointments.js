@@ -16,4 +16,10 @@ router.get('/doctors-by-specialization/:specialization', patientAppointmentsCont
 // Get doctor time slots
 router.get('/doctor-time-slots/:doctorId', patientAppointmentsController.getDoctorTimeSlots);
 
+// Get patient appointments
+router.get('/my-appointments', patientAppointmentsController.getPatientAppointments);
+
+// Cancel appointment
+router.put('/cancel/:id', patientAppointmentsController.cancelAppointmentByPatient);
+
 module.exports = router;
