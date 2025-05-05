@@ -33,6 +33,8 @@ app.use('/api/services', require('./routes/databaseAdminBoard/services'));
 app.use('/api/programs', require('./routes/databaseAdminBoard/programs'));
 
 app.use('/api/auth', require('./routes/authentication/auth'));
+app.use('/api/auth/profile', require('./routes/authentication/profile'));
+
 
 app.use('/api/dashboard', require('./routes/dashboard/dashboard'))
 
