@@ -13,6 +13,30 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Swagger 
+const swaggerUi = require('swagger-ui-express');
+const swaggerJSDoc = require('swagger-jsdoc');
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'VROCH API',
+      version: '1.0.0',
+      description: 'API Documentation for Virtual Hospital System',
+    },
+    servers: [
+      {
+        url: 'http://localhost:5000',
+      },
+    ],
+  },
+  apis: ['./routes/**/*.js'], // This picks up JSDoc from all route files
+};
+
+const swaggerDocs = swaggerJSDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 // API Routes
 
 app.use('/api/users', require('./routes/databaseAdminBoard/users'));
@@ -34,7 +58,6 @@ app.use('/api/programs', require('./routes/databaseAdminBoard/programs'));
 
 app.use('/api/auth', require('./routes/authentication/auth'));
 app.use('/api/auth/profile', require('./routes/authentication/profile'));
-
 
 app.use('/api/dashboard', require('./routes/dashboard/dashboard'))
 
