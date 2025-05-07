@@ -70,6 +70,11 @@ app.use('/api/doctor/appointments', require('./routes/doctor/doctorAppointments'
 app.use('/api/patient', require('./routes/patient/patient'));
 app.use('/api/patient/appointments', require('./routes/patient/patientAppointments'));
 
+app.use('/api/upload', require('./routes/fileUpload'))
+app.use('/uploads', express.static('uploads'));
+app.use('/api', require('./routes/medicalRecords/medicalRecords'));
+app.use('/api', require('./routes/prescriptions/prescriptions'));
+
 // Serve frontend
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'register.html'));
