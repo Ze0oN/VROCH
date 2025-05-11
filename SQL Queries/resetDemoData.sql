@@ -282,24 +282,42 @@ INSERT INTO notifications (user_id, title, body) VALUES
 (3, 'Vaccination Reminder', 'Time for your annual flu shot.');
 
 
--- PHARMACY ORDERS TABLE
+-------------------------------------------------------------------------------------------------
+-- DROP IF EXISTS
+DROP TABLE IF EXISTS pharmacy_orders CASCADE;
+DROP TABLE IF EXISTS medications CASCADE;
+
+-- CREATE MEDICATIONS TABLE
+CREATE TABLE medications (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    description TEXT,
+    price NUMERIC(10,2) NOT NULL
+);
+
+INSERT INTO medications (name, description, price) VALUES
+('Ibuprofen', 'Pain reliever and anti-inflammatory', 10.00),
+('Paracetamol', 'Pain reliever and fever reducer', 8.00),
+('Metformin', 'Used to treat type 2 diabetes', 20.00),
+('Amoxicillin', 'Antibiotic for bacterial infections', 15.00),
+('Vitamin D', 'Vitamin supplement for bone health', 12.00),
+('Cetirizine', 'Antihistamine for allergy relief', 9.50),
+('Lisinopril', 'Blood pressure medication', 14.00),
+('Omeprazole', 'Reduces stomach acid', 11.00);
+
+-- CREATE PHARMACY ORDERS TABLE
 CREATE TABLE pharmacy_orders (
     id SERIAL PRIMARY KEY,
     patient_id INT REFERENCES patients(id),
-    medications TEXT,
-    total_amount NUMERIC(10, 2),
-    status VARCHAR(20),
+    medications TEXT NOT NULL,
+    total_amount NUMERIC(10,2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending',
+    prescription_file TEXT,
     ordered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO pharmacy_orders (patient_id, medications, total_amount, status) VALUES
-(1, 'Ibuprofen, Paracetamol', 75.50, 'delivered'),
-(2, 'Metformin, Aspirin', 90.00, 'processing'),
-(3, 'Amoxicillin, Vitamin D', 68.00, 'delivered'),
-(4, 'Lisinopril, Omeprazole', 102.25, 'cancelled'),
-(1, 'Aspirin', 20.00, 'delivered'),
-(2, 'Insulin, Paracetamol', 110.90, 'pending'),
-(3, 'Cough Syrup, Antacid', 42.10, 'delivered');
+
+-------------------------------------------------------------------------------------------------
 
 
 -- SUPPORT TICKETS TABLE
@@ -384,3 +402,5 @@ INSERT INTO user_passwords (email, password) VALUES
 ('karev@vroch.com', 'password'),
 ('claire@vroch.com', 'password'),
 ('tom@vroch.com', 'password');
+
+

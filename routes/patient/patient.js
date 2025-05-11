@@ -7,6 +7,9 @@ const requirePatient = require('../../middleware/requirePatient');
 router.use(verifyToken);
 router.use(requirePatient);
 
+// Use controller for profile route
+router.get('/profile', controller.getPatientProfile);
+
 /**
  * @swagger
  * /api/patient/appointments:
@@ -22,6 +25,7 @@ router.use(requirePatient);
  *         description: Unauthorized
  */
 router.get('/appointments', controller.getAppointments);
+
 /**
  * @swagger
  * /api/patient/prescriptions:
@@ -37,6 +41,7 @@ router.get('/appointments', controller.getAppointments);
  *         description: Unauthorized
  */
 router.get('/prescriptions', controller.getPrescriptions);
+
 /**
  * @swagger
  * /api/patient/records:

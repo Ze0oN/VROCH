@@ -37,6 +37,7 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
+
 // API Routes
 
 app.use('/api/users', require('./routes/databaseAdminBoard/users'));
@@ -51,7 +52,7 @@ app.use('/api/bills', require('./routes/databaseAdminBoard/bills'));
 app.use('/api/subscriptions', require('./routes/databaseAdminBoard/subscriptions'));
 app.use('/api/messages', require('./routes/databaseAdminBoard/messages'));
 app.use('/api/notifications', require('./routes/databaseAdminBoard/notifications'));
-app.use('/api/pharmacy-orders', require('./routes/databaseAdminBoard/pharmacyOrders'));
+// app.use('/api/pharmacy-orders', require('./routes/databaseAdminBoard/pharmacyOrders'));
 app.use('/api/support-tickets', require('./routes/databaseAdminBoard/supportTickets'));
 app.use('/api/services', require('./routes/databaseAdminBoard/services'));
 app.use('/api/programs', require('./routes/databaseAdminBoard/programs'));
@@ -74,6 +75,16 @@ app.use('/api/upload', require('./routes/fileUpload'))
 app.use('/uploads', express.static('uploads'));
 app.use('/api', require('./routes/medicalRecords/medicalRecords'));
 app.use('/api', require('./routes/prescriptions/prescriptions'));
+
+
+
+const pharmacyOrderRoutes = require('./routes/PharmacyOrders/pharmacyOrders');
+app.use('/api/pharmacy-orders', pharmacyOrderRoutes);
+
+
+const fileRoutes = require('./routes/files/files');
+app.use('/api/files', fileRoutes);
+
 
 // Serve frontend
 app.get('/', (req, res) => {
