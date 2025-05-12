@@ -523,12 +523,12 @@ const panelFunctions = {
 
   'pharmacy-orders': {
     getAllPharmacy_orders: async () => {
-      const res = await fetch('/api/pharmacy-orders', { headers: authHeaders() });
+      const res = await fetch('/api/adminBoard/pharmacy-orders', { headers: authHeaders() });
       showOutput(await res.json());
     },
     getPharmacy_ordersById: async () => {
       const id = document.getElementById('pharmacy_ordersId')?.value;
-      const res = await fetch(`/api/pharmacy-orders/${id}`, { headers: authHeaders() });
+      const res = await fetch(`/api/adminBoard/pharmacy-orders/${id}`, { headers: authHeaders() });
       showOutput(await res.json());
     },
     createPharmacy_orders: async () => {
@@ -539,7 +539,7 @@ const panelFunctions = {
         status: document.getElementById('status')?.value,
         ordered_at: document.getElementById('order_date')?.value,
       };
-      const res = await fetch('/api/pharmacy-orders', {
+      const res = await fetch('/api/adminBoard/pharmacy-orders', {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify(body),
@@ -555,7 +555,7 @@ const panelFunctions = {
         status: document.getElementById('status')?.value,
         ordered_at: document.getElementById('order_date')?.value,
       };
-      const res = await fetch(`/api/pharmacy-orders/${id}`, {
+      const res = await fetch(`/api/adminBoard/pharmacy-orders/${id}`, {
         method: 'PUT',
         headers: authHeaders(),
         body: JSON.stringify(body),
@@ -564,7 +564,7 @@ const panelFunctions = {
     },
     deletePharmacy_orders: async () => {
       const id = document.getElementById('pharmacy_ordersId')?.value;
-      const res = await fetch(`/api/pharmacy-orders/${id}`, {
+      const res = await fetch(`/api/adminBoard/pharmacy-orders/${id}`, {
         method: 'DELETE',
         headers: authHeaders()
       });

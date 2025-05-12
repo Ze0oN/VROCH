@@ -1,5 +1,5 @@
 -- DROP ALL TABLES IF THEY EXIST
-DROP TABLE IF EXISTS appointment_status_logs, user_passwords, health_programs, services, support_tickets, pharmacy_orders, notifications, messages, subscriptions, bills, medical_records, prescriptions, appointments, doctor_time_slots, patients, doctors, users CASCADE;
+DROP TABLE IF EXISTS appointment_status_logs, plans,  user_passwords, health_programs, services, support_tickets, pharmacy_orders, notifications, messages, subscriptions, bills, medical_records, prescriptions, appointments, doctor_time_slots, patients, doctors, users CASCADE;
 
 -- USERS TABLE
 CREATE TABLE users (
@@ -220,6 +220,24 @@ INSERT INTO bills (patient_id, amount, status, billing_date, details) VALUES
 (3, 250.00, 'pending', '2025-05-14', 'Diagnostic imaging and review');
 
 
+-- PLANS TABLE
+CREATE TABLE plans (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price NUMERIC(10, 2) NOT NULL,
+    duration_days INT NOT NULL, -- how long the plan lasts
+    features TEXT[], -- array of features
+    currency VARCHAR(10) DEFAULT 'SAR'
+);
+
+INSERT INTO plans (name, description, price, duration_days, features) VALUES
+('Basic Health Plan', 'Covers monthly consultations and follow-ups', 99.00, 30, ARRAY['Monthly doctor consults', 'Follow-up reminders']),
+('Family Care Plan', 'Healthcare access for up to 5 family members', 299.00, 90, ARRAY['Group consultations', 'Child specialist access']),
+('Premium Health Plan', 'All-inclusive premium services and medicine delivery', 499.00, 180, ARRAY['24/7 virtual care', 'Medicine home delivery', 'Lab test discounts']),
+('Elderly Care Plan', 'Designed for senior citizens with routine checkups', 199.00, 60, ARRAY['Blood pressure checkups', 'Diabetes monitoring', 'Home visit eligibility']);
+
+
 -- SUBSCRIPTIONS TABLE
 CREATE TABLE subscriptions (
     id SERIAL PRIMARY KEY,
@@ -315,6 +333,9 @@ CREATE TABLE pharmacy_orders (
     prescription_file TEXT,
     ordered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+INSERT INTO pharmacy_orders (patient_id, medications, total_amount) VALUES
+(1, 'Ibuprofen', 10.00);
 
 
 -------------------------------------------------------------------------------------------------

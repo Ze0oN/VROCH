@@ -51,6 +51,15 @@
   <button onclick="window.location.href='../admin-dashboard.html'" class="primary" style="margin-top: 30px;">⬅ Back to Dashboard</button>
 
   <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      const role = localStorage.getItem('userRole');
+
+      if (!token || role !== 'admin') {
+        localStorage.clear();
+        window.location.href = '../login.html';
+      }
+    });
     function authHeaders() {
       return {
         'Content-Type': 'application/json',

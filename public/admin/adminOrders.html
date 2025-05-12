@@ -50,6 +50,16 @@
   </table>
 
 <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('userRole');
+
+    if (!token || role !== 'admin') {
+      localStorage.clear();
+      window.location.href = '../login.html';
+    }
+  });
+  
   function goBack() {
     const role = localStorage.getItem('userRole');
     if (role === 'admin') {

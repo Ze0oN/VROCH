@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Billing Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-4">Billing Dashboard</h2>
+
+    <div class="flex flex-wrap gap-4 items-center mb-4">
+      <label class="text-sm font-medium">Status:</label>
+      <select id="statusFilter" class="border border-gray-300 rounded px-2 py-1">
+        <option value="">All</option>
+        <option value="pending">Pending</option>
+        <option value="paid">Paid</option>
+      </select>
+
+      <label class="text-sm font-medium">Date:</label>
+      <input type="date" id="dateFilter" class="border border-gray-300 rounded px-2 py-1" />
+
+      <button onclick="loadBills()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Apply Filters</button>
+      <button onclick="downloadCSV()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Export CSV</button>
+      <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Export PDF</button>
+      <button onclick="back()" style="background-color: white; color: #444;">Back</button>
+    </div>
+
+    <div class="overflow-x-auto mt-4">
+      <table class="min-w-full bg-white border border-gray-300 rounded">
+        <thead class="bg-gray-200 text-sm font-medium">
+          <tr>
+            <th class="py-2 px-4 border">ID</th>
+            <th class="py-2 px-4 border">Patient ID</th>
+            <th class="py-2 px-4 border">Amount</th>
+            <th class="py-2 px-4 border">Status</th>
+            <th class="py-2 px-4 border">Date</th>
+            <th class="py-2 px-4 border">Details</th>
+          </tr>
+        </thead>
+        <tbody id="billingTable" class="text-sm"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      const role = localStorage.getItem('userRole');
+
+      if (!token || role !== 'admin') {
+        localStorage.clear();
+        window.location.href = '../login.html';
+      }
+    });
+
+    function back() {
+      window.location.href = '../admin-dashboard.html';
+    }
+    
+    async function loadBills() {
+      const status = document.getElementById('statusFilter').value;
+      const date = document.getElementById('dateFilter').value;
+      const res = await fetch(`/api/admin/billing?status=${status}&date=${date}`, {
+        headers: {
+          'x-user-role': localStorage.getItem('userRole'),
+          'x-user-id': localStorage.getItem('userId')
+        }
+      });
+      const data = await res.json();
+      const tbody = document.getElementById('billingTable');
+      tbody.innerHTML = '';
+
+      if (Array.isArray(data)) {
+        data.forEach(bill => {
+          const row = `
+            <tr class="hover:bg-gray-100">
+              <td class="py-2 px-4 border">${bill.id}</td>
+              <td class="py-2 px-4 border">${bill.patient_id}</td>
+              <td class="py-2 px-4 border">${bill.amount}</td>
+              <td class="py-2 px-4 border">${bill.status}</td>
+              <td class="py-2 px-4 border">${bill.billing_date}</td>
+              <td class="py-2 px-4 border">${bill.details || ''}</td>
+            </tr>`;
+          tbody.insertAdjacentHTML('beforeend', row);
+        });
+      } else {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-red-500 py-4">${data.error || 'No billing data available'}</td></tr>`;
+      }
+    }
+
+    function downloadCSV() {
+      window.location.href = '/api/admin/billing/export/csv';
+    }
+
+    function downloadPDF() {
+      window.location.href = '/api/admin/billing/export/pdf';
+    }
+
+    window.onload = loadBills;
+  </script>
+</body>
+</html>
