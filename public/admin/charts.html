@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Charts Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 p-6 min-h-screen">
+  <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold mb-6">📊 Charts & Analytics</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-white p-4 border rounded shadow">
+        <h2 class="text-xl font-semibold mb-2">Top 5 Doctors by Appointments</h2>
+        <canvas id="topDoctorsChart" height="300"></canvas>
+      </div>
+
+      <div class="bg-white p-4 border rounded shadow">
+        <h2 class="text-xl font-semibold mb-2">Top Ordered Medications</h2>
+        <canvas id="topMedsChart" height="300"></canvas>
+      </div>
+
+      <div class="bg-white p-4 border rounded shadow col-span-1 md:col-span-2">
+        <h2 class="text-xl font-semibold mb-2">Subscription Distribution</h2>
+        <canvas id="subscriptionChart" height="200"></canvas>
+      </div>
+    </div>
+    <button onclick="back()" style="background-color: white; color: #444;">Back</button>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('userRole');
+
+        if (!token || role !== 'admin') {
+        localStorage.clear();
+        window.location.href = '../login.html';
+        }
+    });
+
+    function back() {
+      window.location.href = '../admin-dashboard.html';
+    }
+
+    async function fetchChart(endpoint) {
+      const res = await fetch(`/api/admin/charts/${endpoint}`, {
+        headers: {
+          'x-user-role': localStorage.getItem('userRole'),
+          'x-user-id': localStorage.getItem('userId')
+        }
+      });
+      return res.json();
+    }
+
+    function renderChart(ctxId, type, labels, data, background = null) {
+      const ctx = document.getElementById(ctxId).getContext('2d');
+      new Chart(ctx, {
+        type: type,
+        data: {
+          labels: labels,
+          datasets: [{
+            label: ctxId.replace('Chart', '').replace(/([A-Z])/g, ' $1').trim(),
+            data: data,
+            backgroundColor: background || [
+              '#60a5fa', '#34d399', '#fbbf24', '#f87171', '#a78bfa'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: type === 'pie'
+            }
+          }
+        }
+      });
+    }
+
+    async function loadCharts() {
+      const [doctors, meds, subs] = await Promise.all([
+        fetchChart('top-doctors'),
+        fetchChart('top-medications'),
+        fetchChart('subscription-distribution')
+      ]);
+
+      renderChart('topDoctorsChart', 'bar', doctors.labels, doctors.values);
+      renderChart('topMedsChart', 'bar', meds.labels, meds.values);
+      renderChart('subscriptionChart', 'pie', subs.labels, subs.values);
+    }
+
+    loadCharts();
+  </script>
+</body>
+</html>

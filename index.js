@@ -71,7 +71,8 @@ app.use('/api/admin', require('./routes/admin/admin'));
 app.use('/api/admin/appointments', require('./routes/admin/adminAppointments'));
 app.use('/api/admin/billing', require('./routes/admin/billing'));
 app.use('/api/admin/subscriptions', require('./routes/admin/subscriptions'));
-
+app.use('/api/admin/stats', require('./routes/admin/stats'));
+app.use('/api/admin/charts', require('./routes/admin/charts'));
 
 // Doctor Functions
 app.use('/api/doctor', require('./routes/doctor/doctor'))

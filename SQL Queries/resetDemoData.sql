@@ -335,7 +335,13 @@ CREATE TABLE pharmacy_orders (
 );
 
 INSERT INTO pharmacy_orders (patient_id, medications, total_amount) VALUES
-(1, 'Ibuprofen', 10.00);
+(1, 'Ibuprofen,Paracetamol', 18.00),
+(2, 'Metformin', 20.00),
+(3, 'Ibuprofen', 10.00),
+(1, 'Cetirizine,Ibuprofen', 19.50),
+(2, 'Omeprazole,Lisinopril', 25.00),
+(3, 'Vitamin D,Amoxicillin', 27.00),
+(1, 'Lisinopril', 14.00);
 
 
 -------------------------------------------------------------------------------------------------
