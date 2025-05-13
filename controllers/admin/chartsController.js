@@ -17,10 +17,19 @@ function buildDateFilter(start, end, columnName = 'created_at') {
   return { filter, values };
 }
 
-// 1. Top 5 doctors by appointments
+// Utility: get query options like top=5, sort=asc
+function getQueryOptions(req) {
+  const top = parseInt(req.query.top) || 5;
+  const sort = req.query.sort === 'asc' ? 'ASC' : 'DESC';
+  const from = req.query.from;
+  const to = req.query.to;
+  return { top, sort, from, to };
+}
+
+// 1. Top doctors by number of appointments
 exports.getTopDoctorsByAppointments = async (req, res) => {
   try {
-    const { from, to } = req.query;
+    const { top, sort, from, to } = getQueryOptions(req);
     const { filter, values } = buildDateFilter(from, to, 'appointment_date');
 
     const query = `
@@ -30,8 +39,8 @@ exports.getTopDoctorsByAppointments = async (req, res) => {
       JOIN users u ON u.id = d.user_id
       WHERE ${filter}
       GROUP BY u.full_name
-      ORDER BY count DESC
-      LIMIT 5
+      ORDER BY count ${sort}
+      LIMIT ${top}
     `;
 
     const result = await db.query(query, values);
@@ -44,10 +53,10 @@ exports.getTopDoctorsByAppointments = async (req, res) => {
   }
 };
 
-// 2. Top 5 most ordered medications
+// 2. Most ordered medications from pharmacy orders
 exports.getTopMedications = async (req, res) => {
   try {
-    const { from, to } = req.query;
+    const { top, sort, from, to } = getQueryOptions(req);
     const { filter, values } = buildDateFilter(from, to, 'ordered_at');
 
     const query = `
@@ -56,8 +65,8 @@ exports.getTopMedications = async (req, res) => {
            unnest(string_to_array(po.medications, ',')) AS med(name)
       WHERE ${filter}
       GROUP BY med.name
-      ORDER BY count DESC
-      LIMIT 5
+      ORDER BY count ${sort}
+      LIMIT ${top}
     `;
 
     const result = await db.query(query, values);
@@ -71,16 +80,20 @@ exports.getTopMedications = async (req, res) => {
   }
 };
 
-// 3. Subscription distribution for pie chart
+// 3. Subscription plan distribution (pie chart ready)
 exports.getSubscriptionDistribution = async (req, res) => {
   try {
-    const result = await db.query(`
+    const { from, to } = getQueryOptions(req);
+    const { filter, values } = buildDateFilter(from, to, 'start_date');
+
+    const query = `
       SELECT plan_name, COUNT(*) AS count
       FROM subscriptions
-      WHERE NOW() BETWEEN start_date AND end_date
+      WHERE ${filter}
       GROUP BY plan_name
-    `);
+    `;
 
+    const result = await db.query(query, values);
     res.json({
       labels: result.rows.map(r => r.plan_name),
       values: result.rows.map(r => parseInt(r.count))

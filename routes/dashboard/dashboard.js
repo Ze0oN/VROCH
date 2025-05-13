@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
-
-const verifyToken = require('../../middleware/verifyToken');
-const requireAdmin = require('../../middleware/requireAdmin');
-const requireDoctor = require('../../middleware/requireDoctor');
-const requirePatient = require('../../middleware/requirePatient');
+const requireRole = require('../../middleware/requireRole');
+const verifyToken = require('../../middleware/verifyToken')
+router.use(verifyToken);
 
 // Admin dashboard route
 /**
@@ -23,7 +21,7 @@ const requirePatient = require('../../middleware/requirePatient');
  *       403:
  *         description: Forbidden - not an admin
  */
-router.get('/admin', verifyToken, requireAdmin, (req, res) => {
+router.get('/admin', verifyToken, requireRole('admin'), (req, res) => {
   res.json({
     role: 'admin',
     message: 'Welcome to the Admin Dashboard',
@@ -48,7 +46,7 @@ router.get('/admin', verifyToken, requireAdmin, (req, res) => {
  *       403:
  *         description: Forbidden - not a doctor
  */
-router.get('/doctor', verifyToken, requireDoctor, (req, res) => {
+router.get('/doctor', verifyToken, requireRole('doctor'), (req, res) => {
   res.json({
     role: 'doctor',
     message: 'Welcome to the Doctor Dashboard',
@@ -73,7 +71,7 @@ router.get('/doctor', verifyToken, requireDoctor, (req, res) => {
  *       403:
  *         description: Forbidden - not a patient
  */
-router.get('/patient', verifyToken, requirePatient, (req, res) => {
+router.get('/patient', verifyToken, requireRole('patient'), (req, res) => {
   res.json({
     role: 'patient',
     message: 'Welcome to the Patient Dashboard',

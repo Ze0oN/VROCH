@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { createOrder, captureOrder } = require('../../controllers/payments/paymentsController');
-const requirePatient = require('../../middleware/requirePatient');
+const requireRole = require('../../middleware/requireRole');
+const verifyToken = require('../../middleware/verifyToken')
+router.use(verifyToken);
 
 /**
  * @swagger
@@ -32,7 +34,7 @@ const requirePatient = require('../../middleware/requirePatient');
  *       500:
  *         description: Server error
  */
-router.post('/create-order', requirePatient, createOrder);
+router.post('/create-order', requireRole('patient'), createOrder);
 
 /**
  * @swagger

@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const doctorController = require('../../controllers/doctor/doctorController');
-const verifyToken = require('../../middleware/verifyToken');
-const requireDoctor = require('../../middleware/requireDoctor');
-
-// Middleware protection
-router.use(verifyToken, requireDoctor);
+const requireRole = require('../../middleware/requireRole');
+const verifyToken = require('../../middleware/verifyToken')
+router.use(verifyToken);
+router.use(requireRole('doctor'))
 
 // Routes
 /**

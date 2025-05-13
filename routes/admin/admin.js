@@ -2,9 +2,9 @@
 const express = require('express');
 const router = express.Router();
 const adminPasswordsController = require('../../controllers/admin/adminPasswordsController');
-
-const verifyToken = require('../../middleware/verifyToken');
-const requireAdmin = require('../../middleware/requireAdmin');
+const requireRole = require('../../middleware/requireRole');
+const verifyToken = require('../../middleware/verifyToken')
+router.use(verifyToken);
 
 // GET /api/admin/passwords
 
@@ -37,6 +37,6 @@ const requireAdmin = require('../../middleware/requireAdmin');
  *       401:
  *         description: Unauthorized - Missing or invalid token
  */
-router.get('/passwords', verifyToken, requireAdmin, adminPasswordsController.getPlainPasswords);
+router.get('/passwords', requireRole('admin'), adminPasswordsController.getPlainPasswords);
 
 module.exports = router;

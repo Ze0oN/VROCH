@@ -17,28 +17,32 @@
   </div>
 
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
-        const token = localStorage.getItem('token');
-        const role = localStorage.getItem('userRole');
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('userRole');
 
-        if (!token || role !== 'admin') {
-        localStorage.clear();
-        window.location.href = '../login.html';
-        }
-    });
+    if (!token || role !== 'admin') {
+      localStorage.clear();
+      window.location.href = '../login.html';
+    }
 
     function back() {
       window.location.href = '../admin-dashboard.html';
     }
 
     async function fetchStats(endpoint) {
-      const res = await fetch(`/api/admin/stats/${endpoint}`, {
-        headers: {
-          'x-user-role': localStorage.getItem('userRole'),
-          'x-user-id': localStorage.getItem('userId')
-        }
-      });
-      return res.json();
+      try {
+        const res = await fetch(`/api/admin/stats/${endpoint}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        return await res.json();
+      } catch (err) {
+        console.error(`Failed to fetch ${endpoint}:`, err);
+        return []; // fallback to empty array
+      }
     }
 
     function createCard(title, contentHtml) {
@@ -71,36 +75,48 @@
       ]);
 
       // Users by role
-      const usersHtml = usersByRole.map(r => `${r.role}: <strong>${r.count}</strong>`).join('<br>');
+      const usersHtml = Array.isArray(usersByRole)
+        ? usersByRole.map(r => `${r.role}: <strong>${r.count}</strong>`).join('<br>')
+        : 'No data';
       container.innerHTML += createCard('👥 Users by Role', usersHtml);
 
       // Appointments by status
-      const appHtml = appointments.map(a => `${a.status}: <strong>${a.count}</strong>`).join('<br>');
+      const appHtml = Array.isArray(appointments)
+        ? appointments.map(a => `${a.status}: <strong>${a.count}</strong>`).join('<br>')
+        : 'No data';
       container.innerHTML += createCard('📅 Appointments', appHtml);
 
       // Prescriptions by doctor
-      const presHtml = prescriptions.map(p => `${p.doctor_name}: <strong>${p.count}</strong>`).join('<br>');
+      const presHtml = Array.isArray(prescriptions)
+        ? prescriptions.map(p => `${p.doctor_name}: <strong>${p.count}</strong>`).join('<br>')
+        : 'No data';
       container.innerHTML += createCard('💊 Prescriptions', presHtml);
 
       // Pharmacy orders
-      const pharmHtml = pharmacyOrders.map(p => `${p.status}: <strong>${p.count}</strong>`).join('<br>');
+      const pharmHtml = Array.isArray(pharmacyOrders)
+        ? pharmacyOrders.map(p => `${p.status}: <strong>${p.count}</strong>`).join('<br>')
+        : 'No data';
       container.innerHTML += createCard('🏥 Pharmacy Orders', pharmHtml);
 
       // Revenue
-      const revHtml = `
-        <div class="mb-1 font-semibold">Monthly:</div>
-        ${revenue.monthly.map(r => `${new Date(r.month).toLocaleDateString('en-MY', { year: 'numeric', month: 'short' })}: SAR ${r.total}`).join('<br>')}
-        <div class="mt-2 font-semibold">Yearly:</div>
-        ${revenue.yearly.map(r => `${new Date(r.year).getFullYear()}: SAR ${r.total}`).join('<br>')}
-      `;
+      const revHtml = revenue && Array.isArray(revenue.monthly) && Array.isArray(revenue.yearly)
+        ? `
+          <div class="mb-1 font-semibold">Monthly:</div>
+          ${revenue.monthly.map(r => `${new Date(r.month).toLocaleDateString('en-MY', { year: 'numeric', month: 'short' })}: SAR ${r.total}`).join('<br>')}
+          <div class="mt-2 font-semibold">Yearly:</div>
+          ${revenue.yearly.map(r => `${new Date(r.year).getFullYear()}: SAR ${r.total}`).join('<br>')}
+        `
+        : 'No data';
       container.innerHTML += createCard('💰 Revenue (Paid Bills)', revHtml);
 
       // Subscriptions
-      const subsHtml = subscriptions.map(s => `${s.plan_name}: <strong>${s.count}</strong>`).join('<br>');
+      const subsHtml = Array.isArray(subscriptions)
+        ? subscriptions.map(s => `${s.plan_name}: <strong>${s.count}</strong>`).join('<br>')
+        : 'No data';
       container.innerHTML += createCard('📦 Active Subscriptions', subsHtml);
     }
 
-    loadStats();
+    window.addEventListener('DOMContentLoaded', loadStats);
   </script>
 </body>
 </html>

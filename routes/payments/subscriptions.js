@@ -7,6 +7,10 @@ const {
   autoRenewSubscriptions
 } = require('../../controllers/payments/subscriptionController');
 
+const requireRole = require('../../middleware/requireRole'); //not used yet
+const verifyToken = require('../../middleware/verifyToken')
+router.use(verifyToken);
+
 /**
  * @swagger
  * /api/payments/subscriptions:

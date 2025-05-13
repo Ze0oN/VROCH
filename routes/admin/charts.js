@@ -1,39 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const charts = require('../../controllers/admin/chartsController');
+const chartsController = require('../../controllers/admin/chartsController');
+const requireRole = require('../../middleware/requireRole');
 
-/**
- * @swagger
- * tags:
- *   name: AdminCharts
- *   description: Analytics and chart-friendly data
- */
+// All routes require admin or doctor access
+const allowedRoles = ['admin', 'doctor'];
 
-/**
- * @swagger
- * /api/admin/charts/top-doctors:
- *   get:
- *     summary: Top 5 doctors by appointment count
- *     tags: [AdminCharts]
- */
-router.get('/top-doctors', charts.getTopDoctorsByAppointments);
-
-/**
- * @swagger
- * /api/admin/charts/top-medications:
- *   get:
- *     summary: Top ordered medications
- *     tags: [AdminCharts]
- */
-router.get('/top-medications', charts.getTopMedications);
-
-/**
- * @swagger
- * /api/admin/charts/subscription-distribution:
- *   get:
- *     summary: Active subscription distribution (pie-ready)
- *     tags: [AdminCharts]
- */
-router.get('/subscription-distribution', charts.getSubscriptionDistribution);
+router.get('/top-doctors', requireRole(allowedRoles), chartsController.getTopDoctorsByAppointments);
+router.get('/top-medications', requireRole(allowedRoles), chartsController.getTopMedications);
+router.get('/subscription-distribution', requireRole(allowedRoles), chartsController.getSubscriptionDistribution);
 
 module.exports = router;

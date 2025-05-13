@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const appointmentsController = require('../../controllers/databaseAdminBoard/appointmentsController');
-const verifyToken = require('../../middleware/verifyToken');
-const requireAdmin = require('../../middleware/requireAdmin');
-
+const requireRole = require('../../middleware/requireRole');
+const verifyToken = require('../../middleware/verifyToken')
 router.use(verifyToken);
-router.use(requireAdmin);
+router.use(requireRole('admin'))
 
 /**
  * @swagger

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PayPal Payment Test with Optional Subscription</title>
+  <meta charset="UTF-8" />
+  <title>PayPal Payment Test</title>
   <script src="https://www.paypal.com/sdk/js?client-id=AQdEAUPSREpc17g8IuyMhBz1PNyhY9fOpBUF8ym4wa_1JecOYwCttqw9hGDpk3RKzMfnIMOtFmc9C3nm&currency=USD"></script>
   <style>
     body {
@@ -11,16 +11,16 @@
       padding: 30px;
     }
     .container {
-      max-width: 500px;
+      max-width: 400px;
       margin: auto;
       background: white;
       padding: 25px;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    input, select {
+    input {
       display: block;
-      width: 80%;
+      width: 100%;
       margin-bottom: 15px;
       padding: 10px;
       font-size: 16px;
@@ -31,32 +31,15 @@
     .note {
       font-size: 12px;
       color: #888;
-      margin-top: 1px;
-
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>PayPal Admin Test Panel</h2>
-    <input id="amount" type="number" placeholder="Enter amount (USD)" min="0.01" step="0.01">
-    <p class="note">* Required.</p>
-    <input id="billId" type="number" placeholder="Bill ID">
-    <p class="note">* optional.</p>
-    <input id="patientId" type="number" placeholder="Patient ID">
-    <p class="note">* optional.</p>
-    <input id="planName" type="text" placeholder="Plan Name (optional)">
-    <p class="note">* optional.</p>
-    <input id="duration" type="number" placeholder="Duration (days, optional)">
-    <p class="note">* optional.</p>
-    <select id="autoRenew">
-      <option value="">Auto-Renew? (optional)</option>
-      <option value="true">Yes</option>
-      <option value="false">No</option>
-    </select>
-    <p class="note">* optional.</p>
+    <h2>PayPal Test Payment</h2>
+    <input id="amount" type="number" placeholder="Enter amount (USD)" min="0.01" step="0.01" required>
     <div id="paypal-button-container"></div>
-    <p class="note">* This uses PayPal sandbox credentials.</p>
+    <p class="note">* Make sure to enter a valid amount to proceed.</p>
     <button onclick="back()" style="background-color: white; color: #444;">Back</button>
   </div>
 
@@ -66,8 +49,8 @@
         const role = localStorage.getItem('userRole');
 
         if (!token || role !== 'admin') {
-        localStorage.clear();
-        window.location.href = '../login.html';
+          localStorage.clear();
+          window.location.href = '../login.html';
         }
     });
 
@@ -78,6 +61,11 @@
     paypal.Buttons({
       createOrder: function(data, actions) {
         const amount = document.getElementById('amount').value;
+        if (!amount || parseFloat(amount) <= 0) {
+          alert('Please enter a valid amount.');
+          throw new Error('Invalid amount');
+        }
+
         return fetch('/api/payments/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -88,29 +76,14 @@
       },
 
       onApprove: function(data, actions) {
-        const bill_id = document.getElementById('billId').value;
-        const patient_id = document.getElementById('patientId').value;
-        const plan_name = document.getElementById('planName').value;
-        const duration_days = document.getElementById('duration').value;
-        const auto_renew = document.getElementById('autoRenew').value;
-
-        const payload = {
-          bill_id: parseInt(bill_id),
-          patient_id: parseInt(patient_id)
-        };
-
-        if (plan_name) payload.plan_name = plan_name;
-        if (duration_days) payload.duration_days = parseInt(duration_days);
-        if (auto_renew) payload.auto_renew = auto_renew === 'true';
-
         return fetch('/api/payments/webhook', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ message: 'Simple payment confirmation' })
         })
         .then(res => res.json())
         .then(response => {
-          alert('Payment completed and subscription processed (if any)');
+          alert('Payment completed!');
           console.log(response);
         });
       }

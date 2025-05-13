@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../db');
-const requireAdmin = require('../../middleware/requireAdmin');
+const requireRole = require('../../middleware/requireRole');
+const verifyToken = require('../../middleware/verifyToken')
+router.use(verifyToken);
 
 // GET /api/admin/subscriptions?plan=...
-router.get('/', requireAdmin, async (req, res) => {
+router.get('/', requireRole('admin'), async (req, res) => {
   const { plan } = req.query;
   let query = 'SELECT * FROM subscriptions WHERE 1=1';
   const values = [];

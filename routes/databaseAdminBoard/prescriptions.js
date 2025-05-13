@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const prescriptionsController = require('../../controllers/databaseAdminBoard/prescriptionsController');
-const verifyToken = require('../../middleware/verifyToken');
-
+const requireRole = require('../../middleware/requireRole');
+const verifyToken = require('../../middleware/verifyToken')
 router.use(verifyToken);
+router.use(requireRole('admin'))
 
 /**
  * @swagger

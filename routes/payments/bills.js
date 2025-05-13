@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { createBill, getBillsByPatient, updateBillStatus, deleteBill } = require('../../controllers/payments/billsController');
 
-const requireAdmin = require('../../middleware/requireAdmin');
-const requireDoctor = require('../../middleware/requireDoctor');
+const requireRole = require('../../middleware/requireRole');
+const verifyToken = require('../../middleware/verifyToken')
+router.use(verifyToken);
 
 // Create a bill (Admin or Doctor only)
 /**
@@ -31,7 +32,7 @@ const requireDoctor = require('../../middleware/requireDoctor');
  *       403:
  *         description: Access denied
  */
-router.post('/', requireDoctor, createBill);
+router.post('/', requireRole(['doctor', 'admin']), createBill);
 
 // View bills for a patient (anyone; access check inside controller)
 /**
@@ -85,7 +86,7 @@ router.get('/patient/:id', getBillsByPatient);
  *       403:
  *         description: Access denied
  */
-router.put('/:id', requireDoctor, updateBillStatus);
+router.put('/:id', requireRole(['doctor', 'admin']), updateBillStatus);
 
 // Delete a bill (Admin only)
 /**
@@ -107,6 +108,6 @@ router.put('/:id', requireDoctor, updateBillStatus);
  *       403:
  *         description: Access denied
  */
-router.delete('/:id', requireAdmin, deleteBill);
+router.delete('/:id', requireRole('admin'), deleteBill);
 
 module.exports = router;

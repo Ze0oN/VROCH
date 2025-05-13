@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../../controllers/patient/patientController');
-const verifyToken = require('../../middleware/verifyToken');
-const requirePatient = require('../../middleware/requirePatient');
-
+const requireRole = require('../../middleware/requireRole');
+const verifyToken = require('../../middleware/verifyToken')
 router.use(verifyToken);
-router.use(requirePatient);
+router.use(requireRole('patient'))
 
 // Use controller for profile route
 router.get('/profile', controller.getPatientProfile);

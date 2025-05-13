@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../../controllers/admin/adminAppointmentsController');
-const verifyToken = require('../../middleware/verifyToken');
-
+const requireRole = require('../../middleware/requireRole');
+const verifyToken = require('../../middleware/verifyToken')
 router.use(verifyToken);
 
 /**
@@ -19,7 +19,7 @@ router.use(verifyToken);
  *       401:
  *         description: Unauthorized - Token missing or invalid
  */
-router.get('/', controller.getAllAppointments);
+router.get('/', requireRole('admin'), controller.getAllAppointments);
 /**
  * @swagger
  * /api/admin/appointments/{id}:
@@ -43,7 +43,7 @@ router.get('/', controller.getAllAppointments);
  *       404:
  *         description: Appointment not found
  */
-router.delete('/:id', controller.deleteAppointment);
+router.delete('/:id', requireRole('admin'), controller.deleteAppointment);
 /**
  * @swagger
  * /api/admin/appointments/{id}/reassign:
@@ -77,6 +77,6 @@ router.delete('/:id', controller.deleteAppointment);
  *       404:
  *         description: Appointment not found
  */
-router.put('/:id/reassign', controller.reassignAppointment);
+router.put('/:id/reassign', requireRole('admin'), controller.reassignAppointment);
 
 module.exports = router;

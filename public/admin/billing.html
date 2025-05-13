@@ -2,103 +2,148 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Billing Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    table { background: #fff; }
+    th, td { padding: 0.75rem; text-align: left; }
+    .error { color: red; padding: 1rem; }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-6">
-  <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold mb-4">Billing Dashboard</h2>
-
-    <div class="flex flex-wrap gap-4 items-center mb-4">
-      <label class="text-sm font-medium">Status:</label>
-      <select id="statusFilter" class="border border-gray-300 rounded px-2 py-1">
+<body class="bg-gray-100 p-6">
+  <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">Billing Dashboard</h1>
+    <div class="flex gap-4 mb-4">
+      <select id="status" class="border px-3 py-2 rounded">
         <option value="">All</option>
-        <option value="pending">Pending</option>
         <option value="paid">Paid</option>
+        <option value="unpaid">Unpaid</option>
+        <option value="pending">Pending</option>
       </select>
-
-      <label class="text-sm font-medium">Date:</label>
-      <input type="date" id="dateFilter" class="border border-gray-300 rounded px-2 py-1" />
-
-      <button onclick="loadBills()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Apply Filters</button>
-      <button onclick="downloadCSV()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Export CSV</button>
-      <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Export PDF</button>
-      <button onclick="back()" style="background-color: white; color: #444;">Back</button>
+      <input type="date" id="date" class="border px-3 py-2 rounded" />
+      <button onclick="loadBills()" class="bg-blue-600 text-white px-4 py-2 rounded">Apply Filters</button>
+      <button onclick="exportCSV()" class="bg-green-600 text-white px-4 py-2 rounded">Export CSV</button>
+      <button onclick="exportPDF()" class="bg-red-600 text-white px-4 py-2 rounded">Export PDF</button>
+      <button onclick="goBack()" class="text-blue-500 ml-auto underline">Back</button>
     </div>
-
-    <div class="overflow-x-auto mt-4">
-      <table class="min-w-full bg-white border border-gray-300 rounded">
-        <thead class="bg-gray-200 text-sm font-medium">
-          <tr>
-            <th class="py-2 px-4 border">ID</th>
-            <th class="py-2 px-4 border">Patient ID</th>
-            <th class="py-2 px-4 border">Amount</th>
-            <th class="py-2 px-4 border">Status</th>
-            <th class="py-2 px-4 border">Date</th>
-            <th class="py-2 px-4 border">Details</th>
-          </tr>
-        </thead>
-        <tbody id="billingTable" class="text-sm"></tbody>
-      </table>
-    </div>
+    <table class="w-full border-collapse rounded shadow">
+      <thead class="bg-gray-100">
+        <tr>
+          <th>ID</th>
+          <th>Patient ID</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody id="billTable" class="text-sm">
+        <tr><td colspan="6" class="text-center py-4 text-gray-500">Loading...</td></tr>
+      </tbody>
+    </table>
   </div>
 
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const token = localStorage.getItem('token');
-      const role = localStorage.getItem('userRole');
+    const token = localStorage.getItem("token");
 
-      if (!token || role !== 'admin') {
-        localStorage.clear();
-        window.location.href = '../login.html';
-      }
-    });
-
-    function back() {
-      window.location.href = '../admin-dashboard.html';
+    if (!token || localStorage.getItem("userRole") !== "admin") {
+      alert("Unauthorized access.");
+      location.href = "/login.html";
     }
-    
+
     async function loadBills() {
-      const status = document.getElementById('statusFilter').value;
-      const date = document.getElementById('dateFilter').value;
-      const res = await fetch(`/api/admin/billing?status=${status}&date=${date}`, {
-        headers: {
-          'x-user-role': localStorage.getItem('userRole'),
-          'x-user-id': localStorage.getItem('userId')
-        }
-      });
-      const data = await res.json();
-      const tbody = document.getElementById('billingTable');
-      tbody.innerHTML = '';
+      const status = document.getElementById("status").value;
+      const date = document.getElementById("date").value;
 
-      if (Array.isArray(data)) {
-        data.forEach(bill => {
-          const row = `
-            <tr class="hover:bg-gray-100">
-              <td class="py-2 px-4 border">${bill.id}</td>
-              <td class="py-2 px-4 border">${bill.patient_id}</td>
-              <td class="py-2 px-4 border">${bill.amount}</td>
-              <td class="py-2 px-4 border">${bill.status}</td>
-              <td class="py-2 px-4 border">${bill.billing_date}</td>
-              <td class="py-2 px-4 border">${bill.details || ''}</td>
-            </tr>`;
-          tbody.insertAdjacentHTML('beforeend', row);
+      try {
+        const res = await fetch(`/api/admin/billing?status=${status}&date=${date}`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-      } else {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-red-500 py-4">${data.error || 'No billing data available'}</td></tr>`;
+
+        const table = document.getElementById("billTable");
+
+        if (!res.ok) {
+          const err = await res.json();
+          table.innerHTML = `<tr><td colspan="6" class="error">${err.error || "Failed to load data."}</td></tr>`;
+          return;
+        }
+
+        const data = await res.json();
+
+        if (data.length === 0) {
+          table.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-4">No bills found.</td></tr>`;
+          return;
+        }
+
+        table.innerHTML = data.map(bill => `
+          <tr>
+            <td>${bill.id}</td>
+            <td>${bill.patient_id}</td>
+            <td>SAR ${bill.amount}</td>
+            <td>${bill.status}</td>
+            <td>${bill.billing_date}</td>
+            <td>${bill.details || '-'}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+        document.getElementById("billTable").innerHTML = `<tr><td colspan="6" class="error">Error loading bills</td></tr>`;
       }
     }
 
-    function downloadCSV() {
-      window.location.href = '/api/admin/billing/export/csv';
+    async function exportCSV() {
+      const status = document.getElementById("status").value;
+      const date = document.getElementById("date").value;
+
+      try {
+        const res = await fetch(`/api/admin/billing/export/csv?status=${status}&date=${date}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) throw new Error("Failed to download CSV");
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "billing_report.csv";
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert("Error exporting CSV");
+        console.error(err);
+      }
     }
 
-    function downloadPDF() {
-      window.location.href = '/api/admin/billing/export/pdf';
+    async function exportPDF() {
+      const status = document.getElementById("status").value;
+      const date = document.getElementById("date").value;
+
+      try {
+        const res = await fetch(`/api/admin/billing/export/pdf?status=${status}&date=${date}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) throw new Error("Failed to download PDF");
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "billing_report.pdf";
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert("Error exporting PDF");
+        console.error(err);
+      }
     }
 
-    window.onload = loadBills;
+    function goBack() {
+      window.location.href = "../admin-dashboard.html";
+    }
+
+    window.addEventListener("DOMContentLoaded", loadBills);
   </script>
 </body>
 </html>

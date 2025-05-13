@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const statsController = require('../../controllers/admin/statsController');
-const requireAdmin = require('../../middleware/requireAdmin');
+const requireRole = require('../../middleware/requireRole');
+const verifyToken = require('../../middleware/verifyToken')
+router.use(verifyToken);
 
 /**
  * @swagger
@@ -20,7 +22,7 @@ const requireAdmin = require('../../middleware/requireAdmin');
  *       200:
  *         description: Role-wise user counts
  */
-router.get('/users-by-role', statsController.getUsersByRole);
+router.get('/users-by-role', requireRole('admin'), statsController.getUsersByRole);
 
 /**
  * @swagger
@@ -42,7 +44,7 @@ router.get('/users-by-role', statsController.getUsersByRole);
  *       200:
  *         description: Appointment counts
  */
-router.get('/appointments', statsController.getAppointmentsStats);
+router.get('/appointments', requireRole('admin'), statsController.getAppointmentsStats);
 
 /**
  * @swagger
@@ -54,7 +56,7 @@ router.get('/appointments', statsController.getAppointmentsStats);
  *       200:
  *         description: Doctor-wise prescription counts
  */
-router.get('/prescriptions', statsController.getPrescriptionsStats);
+router.get('/prescriptions', requireRole('admin'), statsController.getPrescriptionsStats);
 
 /**
  * @swagger
@@ -66,7 +68,7 @@ router.get('/prescriptions', statsController.getPrescriptionsStats);
  *       200:
  *         description: Pharmacy order stats
  */
-router.get('/pharmacy-orders', statsController.getPharmacyOrdersStats);
+router.get('/pharmacy-orders', requireRole('admin'), statsController.getPharmacyOrdersStats);
 
 /**
  * @swagger
@@ -78,7 +80,7 @@ router.get('/pharmacy-orders', statsController.getPharmacyOrdersStats);
  *       200:
  *         description: Monthly and yearly revenue totals
  */
-router.get('/revenue', statsController.getRevenueStats);
+router.get('/revenue', requireRole('admin'), statsController.getRevenueStats);
 
 /**
  * @swagger
@@ -90,6 +92,6 @@ router.get('/revenue', statsController.getRevenueStats);
  *       200:
  *         description: Subscription usage by plan
  */
-router.get('/subscriptions', statsController.getSubscriptionsStats);
+router.get('/subscriptions', requireRole('admin'), statsController.getSubscriptionsStats);
 
 module.exports = router;
