@@ -10,7 +10,7 @@ router.use(verifyToken);
  * /api/payments/create-order:
  *   post:
  *     summary: Create a new PayPal order
- *     tags: [Payments]
+ *     tags: [Billing]
  *     requestBody:
  *       required: true
  *       content:
@@ -41,7 +41,7 @@ router.post('/create-order', requireRole('patient'), createOrder);
  * /api/payments/capture-order:
  *   post:
  *     summary: Capture an approved PayPal order
- *     tags: [Payments]
+ *     tags: [Billing]
  *     requestBody:
  *       required: true
  *       content:

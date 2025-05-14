@@ -8,8 +8,7 @@ const { uploadMedicalRecord, uploadPrescription } = require('../middleware/uploa
  * /api/upload/medical-record:
  *   post:
  *     summary: Upload a medical record file
- *     tags:
- *       - File Upload
+ *     tags: [File Upload]
  *     requestBody:
  *       required: true
  *       content:
@@ -24,18 +23,10 @@ const { uploadMedicalRecord, uploadPrescription } = require('../middleware/uploa
  *     responses:
  *       200:
  *         description: Medical record uploaded successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 file:
- *                   type: object
  *       400:
  *         description: No file uploaded or invalid file type
  */
+
 router.post('/upload/medical-record', uploadMedicalRecord.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded or invalid file type.' });
@@ -52,8 +43,7 @@ router.post('/upload/medical-record', uploadMedicalRecord.single('file'), (req, 
  * /api/upload/prescription:
  *   post:
  *     summary: Upload a prescription file
- *     tags:
- *       - File Upload
+ *     tags: [File Upload]
  *     requestBody:
  *       required: true
  *       content:
@@ -68,18 +58,10 @@ router.post('/upload/medical-record', uploadMedicalRecord.single('file'), (req, 
  *     responses:
  *       200:
  *         description: Prescription uploaded successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 file:
- *                   type: object
  *       400:
  *         description: No file uploaded or invalid file type
  */
+
 router.post('/upload/prescription', uploadPrescription.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded or invalid file type.' });

@@ -1,13 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const { handleWebhook } = require('../../controllers/payments/webhookController');
+const verifyToken = require('../../middleware/verifyToken')
+router.use(verifyToken);
 
 /**
  * @swagger
  * /api/payments/webhook:
  *   post:
  *     summary: Webhook to update bill status and optionally start subscription
- *     tags: [Payments]
+ *     tags: [Billing]
  *     requestBody:
  *       required: true
  *       content:

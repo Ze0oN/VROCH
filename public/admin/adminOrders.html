@@ -83,7 +83,7 @@
     tbody.innerHTML = '';
 
     data.forEach(order => {
-      const meds = JSON.parse(order.medications).join(', ');
+      const meds = (order.medications || '').split(',').join(', ');
       const filename = order.prescription_file ? order.prescription_file.split('/').pop() : null;
       const row = document.createElement('tr');
 
@@ -109,6 +109,7 @@
       tbody.appendChild(row);
       document.getElementById(`status-${order.id}`).value = order.status;
     });
+
   }
 
   async function updateStatus(orderId) {
