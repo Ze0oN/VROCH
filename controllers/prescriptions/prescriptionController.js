@@ -1,6 +1,7 @@
 const pool = require('../../db');
 const fs = require('fs');
 const path = require('path');
+const { encrypt, decrypt } = require('../../utils/encrypt');
 
 // POST /prescriptions
 exports.addPrescription = async (req, res) => {
@@ -12,10 +13,12 @@ exports.addPrescription = async (req, res) => {
   const filePath = req.file ? req.file.path : null;
 
   try {
+    const encryptedInstructions = encrypt(instructions);
+
     const result = await pool.query(
       `INSERT INTO prescriptions (appointment_id, medication, dosage, instructions, issued_date)
        VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [appointment_id, medication, dosage, instructions, issued_date]
+      [appointment_id, medication, dosage, encryptedInstructions, issued_date]
     );
 
     res.status(201).json({
@@ -46,7 +49,13 @@ exports.getPrescriptionsByPatient = async (req, res) => {
        ORDER BY issued_date DESC`,
       [id]
     );
-    res.status(200).json(result.rows);
+
+    const prescriptions = result.rows.map(p => ({
+      ...p,
+      instructions: decrypt(p.instructions)
+    }));
+
+    res.status(200).json(prescriptions);
   } catch (err) {
     console.error('Error fetching patient prescriptions:', err);
     res.status(500).json({ error: 'Server error' });
@@ -69,7 +78,13 @@ exports.getPrescriptionsByDoctor = async (req, res) => {
        ORDER BY issued_date DESC`,
       [id]
     );
-    res.status(200).json(result.rows);
+
+    const prescriptions = result.rows.map(p => ({
+      ...p,
+      instructions: decrypt(p.instructions)
+    }));
+
+    res.status(200).json(prescriptions);
   } catch (err) {
     console.error('Error fetching doctor prescriptions:', err);
     res.status(500).json({ error: 'Server error' });

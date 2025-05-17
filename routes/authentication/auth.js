@@ -1,8 +1,40 @@
 const express = require('express');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
+const { body, validationResult } = require('express-validator');
 const router = express.Router();
 const authController = require('../../controllers/authentication/authController');
+const { loginLimiter } = require('../../middleware/rateLimit');
+
+// Optional: add register limiter
+const registerLimiter = require('express-rate-limit')({
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 10,
+  message: { error: 'Too many registration attempts, try again later.' }
+});
+
+// Validation middleware
+const validateRegister = [
+  body('full_name').trim().isLength({ min: 3 }).escape(),
+  body('email').isEmail().normalizeEmail(),
+  body('password').isLength({ min: 6 }),
+  body('role').isIn(['admin', 'doctor', 'patient']),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    next();
+  }
+];
+
+const validateLogin = [
+  body('email').isEmail().normalizeEmail(),
+  body('password').exists().isLength({ min: 1 }),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    next();
+  }
+];
 
 // @route   POST /api/auth/register
 /**
@@ -38,7 +70,7 @@ const authController = require('../../controllers/authentication/authController'
  *       400:
  *         description: Email already exists or invalid input
  */
-router.post('/register', authController.registerUser);
+router.post('/register', validateRegister, registerLimiter, authController.registerUser);
 
 // @route   POST /api/auth/login
 /**
@@ -67,7 +99,7 @@ router.post('/register', authController.registerUser);
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', authController.loginUser);
+router.post('/login', validateLogin, loginLimiter, authController.loginUser);
 
 // GOOGLE LOGIN
 /**
@@ -86,8 +118,7 @@ router.get('/google/callback',
   passport.authenticate('google', { session: false, failureRedirect: '/login.html' }),
   (req, res) => {
     const token = jwt.sign({ id: req.user.id, role: req.user.role }, process.env.JWT_SECRET);
-
-    let redirectUrl = '/under-development.html'; // default fallback
+    let redirectUrl = '/under-development.html';
 
     if (req.user.role === 'admin') {
       redirectUrl = `/admin-dashboard.html?token=${token}`;
@@ -118,8 +149,7 @@ router.get('/facebook/callback',
   passport.authenticate('facebook', { session: false, failureRedirect: '/login.html' }),
   (req, res) => {
     const token = jwt.sign({ id: req.user.id, role: req.user.role }, process.env.JWT_SECRET);
-
-    let redirectUrl = '/under-development.html'; // default fallback
+    let redirectUrl = '/under-development.html';
 
     if (req.user.role === 'admin') {
       redirectUrl = `/admin-dashboard.html?token=${token}`;

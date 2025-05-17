@@ -9,6 +9,7 @@ const {
 
 const verifyToken = require('../../middleware/verifyToken');
 const { uploadPrescription } = require('../../middleware/uploadMiddleware');
+const { validateAddPrescription } = require('../../validators/prescriptionsValidation');
 
 /**
  * @swagger
@@ -52,7 +53,13 @@ const { uploadPrescription } = require('../../middleware/uploadMiddleware');
  *       403:
  *         description: Access denied
  */
-router.post('/', verifyToken, uploadPrescription.single('file'), addPrescription);
+router.post(
+  '/',
+  verifyToken,
+  uploadPrescription.single('file'),
+  validateAddPrescription,
+  addPrescription
+);
 
 /**
  * @swagger

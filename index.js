@@ -2,19 +2,54 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const passport = require('passport');
+const helmet = require('helmet');
 require('dotenv').config();
+
+// OAuth Strategies
 require('./controllers/authentication/googleStrategy');
 require('./controllers/authentication/facebookStrategy');
-app.use(passport.initialize());
-app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Middleware: security
+if (process.env.NODE_ENV === 'production') {
+  app.use(helmet()); // default helmet settings
+
+  // Strict CSP for production
+  app.use(
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://trusted.cdn.com"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    })
+  );
+
+  // Enforce HTTPS
+  app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(`https://${req.headers.host}${req.url}`);
+    }
+    next();
+  });
+} else {
+  // Dev: allow inline scripts and disable CSP caching
+  app.use((req, res, next) => {
+    res.removeHeader('Content-Security-Policy');
+    res.setHeader('Cache-Control', 'no-store');
+    next();
+  });
+}
+
+app.use(passport.initialize());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Swagger 
+// Swagger Docs
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 
@@ -26,20 +61,17 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'API Documentation for Virtual Hospital System',
     },
-    servers: [
-      {
-        url: 'http://localhost:5000',
-      },
-    ],
+    servers: [{ url: 'http://localhost:5000' }],
   },
-  apis: ['./routes/**/*.js'], // This picks up JSDoc from all route files
+  apis: ['./routes/**/*.js'],
 };
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-
-// API Routes
+// ------------------------
+//         ROUTES
+// ------------------------
 
 // Database Admin Board
 app.use('/api/users', require('./routes/databaseAdminBoard/users'));
@@ -63,10 +95,10 @@ app.use('/api/programs', require('./routes/databaseAdminBoard/programs'));
 app.use('/api/auth', require('./routes/authentication/auth'));
 app.use('/api/auth/profile', require('./routes/authentication/profile'));
 
-// Dashboard Controll
-app.use('/api/dashboard', require('./routes/dashboard/dashboard'))
+// Dashboard
+app.use('/api/dashboard', require('./routes/dashboard/dashboard'));
 
-// Admin Functions
+// Admin
 app.use('/api/admin', require('./routes/admin/admin'));
 app.use('/api/admin/appointments', require('./routes/admin/adminAppointments'));
 app.use('/api/admin/billing', require('./routes/admin/billing'));
@@ -74,32 +106,29 @@ app.use('/api/admin/subscriptions', require('./routes/admin/subscriptions'));
 app.use('/api/admin/stats', require('./routes/admin/stats'));
 app.use('/api/admin/charts', require('./routes/admin/charts'));
 
-// Doctor Functions
-app.use('/api/doctor', require('./routes/doctor/doctor'))
+// Doctor
+app.use('/api/doctor', require('./routes/doctor/doctor'));
 app.use('/api/doctor/appointments', require('./routes/doctor/doctorAppointments'));
 
-// Patient Functions
+// Patient
 app.use('/api/patient', require('./routes/patient/patient'));
 app.use('/api/patient/appointments', require('./routes/patient/patientAppointments'));
 
-// Upload
-app.use('/api/upload', require('./routes/fileUpload'))
+// Upload & File Handling
+app.use('/api/upload', require('./routes/fileUpload'));
 app.use('/uploads', express.static('uploads'));
 app.use('/api', require('./routes/medicalRecords/medicalRecords'));
 app.use('/api', require('./routes/prescriptions/prescriptions'));
-
-// Pharmacy
-app.use('/api/pharmacy-orders', require('./routes/PharmacyOrders/pharmacyOrders'));
 app.use('/api/files', require('./routes/files/files'));
 
-// Payments
+// Pharmacy & Payments
+app.use('/api/pharmacy-orders', require('./routes/PharmacyOrders/pharmacyOrders'));
 app.use('/api/payments', require('./routes/payments/payments'));
 app.use('/api/payments/bills', require('./routes/payments/bills'));
 app.use('/api/payments/webhook', require('./routes/payments/webhook'));
 app.use('/api/payments/subscriptions', require('./routes/payments/subscriptions'));
 
-
-// Serve frontend
+// Frontend Entry
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });

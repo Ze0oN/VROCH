@@ -2,9 +2,14 @@ const express = require('express');
 const router = express.Router();
 const appointmentsController = require('../../controllers/databaseAdminBoard/appointmentsController');
 const requireRole = require('../../middleware/requireRole');
-const verifyToken = require('../../middleware/verifyToken')
+const verifyToken = require('../../middleware/verifyToken');
+const {
+  validateCreateAppointment,
+  validateUpdateAppointment
+} = require('../../validators/appointmentsValidation');
+
 router.use(verifyToken);
-router.use(requireRole('admin'))
+router.use(requireRole('admin'));
 
 /**
  * @swagger
@@ -21,6 +26,7 @@ router.use(requireRole('admin'))
  *         description: Unauthorized
  */
 router.get('/', appointmentsController.getAllAppointments);
+
 /**
  * @swagger
  * /api/appointments/{id}:
@@ -42,6 +48,7 @@ router.get('/', appointmentsController.getAllAppointments);
  *         description: Appointment not found
  */
 router.get('/:id', appointmentsController.getAppointmentById);
+
 /**
  * @swagger
  * /api/appointments:
@@ -84,7 +91,8 @@ router.get('/:id', appointmentsController.getAppointmentById);
  *       400:
  *         description: Bad input
  */
-router.post('/', appointmentsController.createAppointment);
+router.post('/', validateCreateAppointment, appointmentsController.createAppointment);
+
 /**
  * @swagger
  * /api/appointments/{id}:
@@ -127,7 +135,8 @@ router.post('/', appointmentsController.createAppointment);
  *       404:
  *         description: Appointment not found
  */
-router.put('/:id', appointmentsController.updateAppointment);
+router.put('/:id', validateUpdateAppointment, appointmentsController.updateAppointment);
+
 /**
  * @swagger
  * /api/appointments/{id}:
